@@ -1,0 +1,62 @@
+version 1.0;
+
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+
+import "../import/junos.xsl";
+
+/* 
+   Version: 1.0 - 16.01.2017
+   Author:  MZvk|A544778
+   "I kind of like SLAX now"
+*/
+
+var $event-definition = {
+   <event-options> {
+      <policy> {
+         <name> "ops-lflap";
+         <events> "system";
+         <attributes-match> {
+            <from-event-attribute> "system.message";
+            <condition> "matches";
+            <to-event-attribute-value> "OP_SCRIPT_TRIGGER.*: intf_flap.slax user:.* delay:.* intf:.*";
+         }
+         <then> {
+            <event-script> {
+               <name> "intf_flap.slax";
+            }
+         }
+      }
+   }
+}
+
+var $local = jcs:open();
+
+match / {
+   <event-script-results> {
+      var $test = event-script-input/trigger-event/attribute-list/attribute[name=="message"]/value;
+      var $intf = jcs:regex("[xgf]e-[0-9]/(0/([0-9]|[1-3][0-9]|4[0-7])|1/[0-3])$", $test);
+      var $delay = jcs:regex("delay:([0-9]{1,2}) ", $test);
+      var $shcmd = "ifconfig " _ $intf;
+      var $shell_out = call shell_cmd($cmd = $shcmd);
+      var $rgx_out = jcs:regex("<[A-Z\|/]+>", $shell_out);
+      if( $rgx_out == "<PRESENT|RUNNING>" ) {
+         var $flap_down = call shell_cmd($cmd = $shcmd _ " down");
+         expr jcs:sleep($delay[2]);
+	 var $flap_up = call shell_cmd($cmd = $shcmd _ " up");
+        }
+    }
+    expr jcs:syslog(14, "eScript terminated with success");
+    expr jcs:close($local);
+}
+
+template shell_cmd($cmd="empty_string") {
+   var $shcmdin = {
+      <request-shell-execute> {
+         <command> $cmd;
+      }
+   }
+   var $result = jcs:execute($local, $shcmdin);
+   expr $result;   
+}

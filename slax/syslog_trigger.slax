@@ -1,0 +1,36 @@
+version 1.0;
+
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+
+import "../import/junos.xsl";
+
+/* 
+   Version: 1.0 - 18.01.2017
+   Author:  MZvk|A544778
+   "I still don't like SLAX!"
+*/
+
+var $arguments = {
+    <argument> {
+        <name> "intf";
+        <description> "interface to manipulate";
+    }
+    <argument> {
+        <name> "delay";
+        <description> "delay for link status change";
+    }
+}
+
+param $delay = 1;
+
+match / {
+    <op-script-results> {
+       if(jcs:empty(jcs:regex("[xgf]e-[0-9]/(0/([0-9]|[1-3][0-9]|4[0-7])|1/[0-3])$", $intf))){
+          terminate "Invalid interface";
+       }
+       expr jcs:syslog(191, "OP_SCRIPT_TRIGGER[7] intf_flap.slax user:" _ $user _ " delay:" _ $delay _ " intf:" _ $intf);
+    }
+}
+
