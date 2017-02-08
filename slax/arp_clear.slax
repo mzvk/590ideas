@@ -23,10 +23,10 @@ param $flush = "no";
 match /	{
   <op-script-results> {
     if (jcs:empty($intf)) { expr jcs:syslog(9, "[" _ $script _ "]: Event script terminated: No interface specified."); terminate; }
-    var $local = jcs:open();
     mvar $rpc-result;
     mvar $clear-count = 0;
     mvar $refresh-count = 0;
+    var $local = jcs:open();
     var	$arp-rpc = <command> "show arp interface " _ $intf _ " no-resolve";
     var $intf-rpc = <command> "show interface terse " _ $intf;
     set $rpc-result = jcs:invoke($intf-rpc);
