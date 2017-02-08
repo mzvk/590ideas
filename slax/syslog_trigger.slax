@@ -10,6 +10,7 @@ import "../import/junos.xsl";
    Version: 1.0 - 18.01.2017
    Author:  MZvk|A544778
    "I still don't like SLAX!"
+   Generates syslog message which triggers event script
 */
 
 var $arguments = {
