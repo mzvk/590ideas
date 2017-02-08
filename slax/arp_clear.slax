@@ -6,6 +6,13 @@ ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
 
 import "../import/junos.xsl";
 
+/* 
+   Version: 1.0 - 06.02.2017
+   Author:  MZvk|A544778
+   "I kind of like SLAX now"
+   Clears all ARP entries on give interface, also trying to refresh
+*/
+
 var $arguments = {
   <argument> {
     <name> "intf";
