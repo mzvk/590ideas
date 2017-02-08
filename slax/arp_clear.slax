@@ -1,0 +1,61 @@
+version 1.1;
+
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+
+import "../import/junos.xsl";
+
+var $arguments = {
+  <argument> {
+    <name> "intf";
+    <description> "Interface to clear";     
+  }
+  <argument> {
+    <name> "flush";
+    <description> "Clear without refresh";     
+  }
+}
+
+param $intf = "";
+param $flush = "no";
+
+match /	{
+  <op-script-results> {
+    if (jcs:empty($intf)) { expr jcs:syslog(9, "[" _ $script _ "]: Event script terminated: No interface specified."); terminate;
+    } else { var $local = jcs:open(); }
+    mvar $rpc-result;
+    mvar $clear-count = 0;
+    mvar $refresh-count = 0;
+    var	$arp-rpc = <command> "show arp interface " _ $intf _ " no-resolve";
+    var $intf-rpc = <command> "show interface terse " _ $intf;
+    set $rpc-result = jcs:invoke($intf-rpc);
+    if (jcs:empty($rpc-result/logical-interface) || $rpc-result/logical-interface/admin-status == "down" || $rpc-result/logical-interface/oper-status == "down") {
+      expr jcs:syslog(9, "[" _ $script _ "]: Event script terminated: Interface " _ $intf _ " is not operational."); 
+      expr jcs:close($local);
+      terminate;
+    }
+    set $rpc-result = jcs:invoke($arp-rpc);
+    if (jcs:empty($rpc-result/arp-table-entry)) { 
+      expr jcs:syslog(9, "[" _ $script _ "]: Event script terminated: ARP table for " _ $intf _ " is empty."); 
+      expr jcs:close($local);
+      terminate; }
+    if ($flush == "yes") {
+      var $clear-rpc = <command> "clear arp interface " _ $intf;
+      expr jcs:invoke($clear-rpc);
+    } else {
+      for-each ($rpc-result/arp-table-entry) { 
+        var $clear-rpc = <command> "clear arp interface " _ $intf _ " hostname " _ ./ip-address;
+        var $ping-rpc = <command> "ping " _ ./ip-address _ " rapid count 1";
+        expr jcs:invoke($clear-rpc);
+        set $clear-count = $clear-count + 1;
+        var $ping-result = jcs:invoke($ping-rpc);
+        if ($ping-result/ping-failure) { expr jcs:syslog(9, "[" _ $script _ "]: Script error: " _ ./ip-address _ " failed to be refreshed." );
+        } else { set $refresh-count = $refresh-count + 1; }
+      }
+    }
+    expr jcs:syslog(9, "["_ $script _"]: Event script completed: refreshed/cleared entries of " _ $intf _ ": " _ $refresh-count _ "/" _ $clear-count);
+    expr jcs:close($local)
+  }
+}
+
