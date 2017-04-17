@@ -57,7 +57,7 @@ for ip in args:
   try:
     mask = len2msk(int(ipin[1]))
     netaddr = str2int(ipin[0]) & mask
-    bcstaddr = str2int(ipin[0]) | ~mask
+    bcstaddr = str2int(ipin[0]) | ~mask & 0xffffffff
   except (ValueError, TypeError, IndexError):
     print '\033[31m{} - Incorrect input value.\033[0m'.format(ipin)
     continue
