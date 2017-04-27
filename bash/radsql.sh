@@ -2,9 +2,10 @@
 
 # MZvk|A544778
 
-ifExist(){
+fExist(){
   result=$(mysql -u root -p$1 radius -t <<< 'select * from radcheck where username="'$2'"' 2>/dev/null)
-  [[ -z $result ]] && echo "[!!] User $user not in DB"
+  [[ -z $result ]] && echo "[!] User '$user' not in DB." && return
+  echo "[i] User '$user' found."
 }
 
 option=0
