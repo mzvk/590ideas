@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+# Prints configured users (uid above 1000), input is taken from passwd database
+# Looks for mail address
+# @MZvk : 2017
+#
+
+echo "+---------+------+------+----------------------+------ ---- -- - "
+echo -e "|  \e[33muser\e[0m   | \e[33muid\e[0m  | \e[33mgid\e[0m  | \e[33mfull name\e[0m            | \e[33memail\e[0m "
+echo "+---------+------+------+----------------------+------------- --- -- -"
+getent passwd | awk -F'[:,]' '$3 >= 1000 && $3 < 5000 \
+                {ch = 0; for(col = 6; col <= NF; col++){if(match($col, /.*@.*/) && ch != col) {ch = col; mail = $col}} \
+                if(ch == 0) mail = " --- "; \
+                printf "| %-7s | %.4d | %.4d | %-20s | %s \n", $1, $3, $4, $5, mail}' | sort -t'|' -nk3
+echo "+---------+------+------+----------------------+----- --- --- -- - "
