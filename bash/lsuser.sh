@@ -26,7 +26,7 @@ user account can be modified. For options usage, root priviliages are needed.
 Usage: $(basename $0) [-r|e [user]]
        Only one action is permitted, rest will be ignored
 Options:
- -?   Prints this help message
+ -h   Prints this help message
  -e   Locks account by setting it to be expired
  -r   Unlocks account by clearing expiriation date
 
@@ -35,12 +35,12 @@ EOL
 }
 
 if [ "$EUID" -eq 0 ]; then
-  while getopts ":e:r:" opt; do
+  while getopts ":e:r:h" opt; do
     case "${opt}" in
       e|r) [[ -z "$user" ]] && user=$OPTARG && optdo=$opt && action $user $opt || \
            echo -e "\e[34m*INFO*:\e[0m Single action is permitted, ignoring: \"-$opt $OPTARG\".";;
-        ?) usage ;;
-       \?) echo -e "\e[31m*ERROR:\e[0m Invalid option: -$OPTARG." >&2 ;;
+        h) usage ;;
+       \?) echo -e "\e[31m*ERROR:\e[0m Invalid option: -$OPTARG. Use -h for help." >&2 ;;
         :) echo -e "\e[31m*ERROR:\e[0m Option -$OPTARG requires an argument." >&2 ;;
     esac
   done
@@ -65,3 +65,7 @@ getent passwd | awk -F'[:,]' '$3 >= 1000 && $3 < 5000 \
 fi
 echo "+---------+------+------+----------------------+----- --- --- -- - "
 echo -e " \e[31m*\e[0m - expired users (only for root)"
+
+#ideas
+# -a/d - add/del account
+
