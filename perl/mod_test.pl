@@ -32,9 +32,9 @@ foreach (@ARGV){
 if($list){
    say "\nResult list:";
    say "** Modules loaded successfully: ".scalar @success;
-   foreach (@success) {say "- ".$_;}
+   for (@success) {say "- ".$_;}
    say "** Modules failed to load: ".scalar @failed;
-   foreach (@failed) {say "- ".$_;}
+   for (@failed) {say "- ".$_;}
 }
 say "";
 exit(0);
