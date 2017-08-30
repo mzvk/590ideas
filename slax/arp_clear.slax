@@ -24,7 +24,7 @@ var $arguments = {
   }
 }
 
-param $intf = "";
+param $intf;
 param $flush = "no";
 
 match /	{
