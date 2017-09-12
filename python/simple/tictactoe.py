@@ -16,7 +16,7 @@ def pmove(x):
     print ' \033[31mInvalid move...\033[0m'
 
 def cmove(x):
-##  while True:
+  while True:
 ##    for pwn in win:
     ## finish if possible
     ## block player
