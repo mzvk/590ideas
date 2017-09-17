@@ -16,15 +16,37 @@ def pmove(x):
     print ' \033[31mInvalid move...\033[0m'
 
 def cmove(x):
-##  while True:
-##    for pwn in win:
-    ## finish if possible
-    ## block player
-    ## add to existing line
-    ## take middle - 75% of the time
-    move = random.randint(0, 8)
-    if x[move] == ' ':
-      return move
+  global cpumove
+  cpumove = [move for move in cpumove if x[move] == ' ']
+  while True:
+    final_moves = []
+    best_metric = 0
+    for move in cpumove:
+      metric = 0
+      mvt = [pwn for pwn in win if move in pwn]
+      for tup in mvt:
+        tuptmp = [val for val in tup if val is not move]
+        assume = set([x[cell] for cell in tuptmp])
+        if len(assume) == 1 and ' ' in assume:
+          metric += 1
+        elif len(assume) == 1 and psprite in assume:
+          metric += 10
+        elif len(assume) == 1 and csprite in assume:
+          metric += 20
+        elif len(assume) == 2 and ' ' and csprite in assume:
+          metric += 3
+        elif len(assume) == 2 and ' ' and psprite in assume:
+          metric += 2
+      if metric > best_metric:
+        best_metric = metric
+        final_moves = [move]
+      elif metric == best_metric:
+        final_moves.append(move)
+    if len(final_moves):
+      return final_moves[random.randint(0, len(final_moves) - 1)]
+    pm = random.randint(0, (len(cpumove) - 1))
+    if x[cpumove[pm]] == ' ':
+      return cpumove[pm]
 
 def chckb(x):
   for lines in win:
@@ -40,6 +62,7 @@ def chckb(x):
       print ">> \033[37mTIE!\033[0m"
       return 1
 
+cpumove = [x for x in xrange(9)]
 bstatus = [' ' for x in xrange(9)]
 charset = set(['X', 'O'])
 psprite = ''
