@@ -18,6 +18,7 @@ def pmove(x):
 def cmove(x):
   global cpumove
   cpumove = [move for move in cpumove if x[move] == ' ']
+
   while True:
     final_moves = []
     best_metric = 0
@@ -62,8 +63,7 @@ def chckb(x):
       print ">> \033[37mTIE!\033[0m"
       return 1
 
-cpumove = [x for x in xrange(9)]
-bstatus = [' ' for x in xrange(9)]
+cpumove, bstatus = map(list, zip(*[(x, ' ') for x in xrange(9)]))
 charset = set(['X', 'O'])
 psprite = ''
 
@@ -71,7 +71,6 @@ while psprite not in charset:
   psprite = raw_input('> Select \'X\' or \'O\' [default X]: ').upper()
   if not psprite:
     psprite = 'X'
-
 charset.discard(psprite)
 csprite = next(iter(charset))
 
