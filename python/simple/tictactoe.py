@@ -87,3 +87,18 @@ while(True):
     break
   drawgfx(bstatus)
 drawgfx(bstatus)
+
+
+
+#turns = range(2)
+#sprite = ['X', 'O']
+#dispatch = [pmove, cmove]
+
+#while(True):
+#  bstatus[dispatch[turns[0]](bstatus)] = sprite[turns[0]]
+#  if(chckb(bstatus)):
+#    break
+#  drawgfx(bstatus)
+#  turns.append(turns.pop(0))
+
+#drawgfx(bstatus)
