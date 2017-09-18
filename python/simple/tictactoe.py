@@ -71,6 +71,7 @@ while psprite not in charset:
   psprite = raw_input('> Select \'X\' or \'O\' [default X]: ').upper()
   if not psprite:
     psprite = 'X'
+
 charset.discard(psprite)
 csprite = next(iter(charset))
 
