@@ -21,7 +21,7 @@ usrs=()
 get_cpid
 uarg=($(echo "$@" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 if searchflag "${uarg[@]}"; then
-  for x in `ps aux | grep -e "\-bash$" | awk '{print $1"-"$2}'`; do
+  for x in `ps aux | grep "\-bash$" | awk '{print $1"-"$2}'`; do
     x=(${x//-/ })
     pids+=(${x[1]})
     if [[ ${pidmap[${x[0]}]+_} ]]; then pidmap[${x[0]}]+=" ${x[1]}"; else pidmap[${x[0]}]+=${x[1]}; fi
@@ -45,6 +45,7 @@ for pid in "${pids[@]}"; do
     echo -e "\e[33mIgnoring current user login shell [$cpid]\e[0m"
   else
     $sudo echo -n "closing session $pid..." ## sudo'd just so prompt for sudo will not mess print-out :V
-    $sudo kill -9 $pid && echo -e "\e[33mdone\e[0m"
+    error=`$sudo kill -9 $pid 2>&1 | sed 's/.*kill: //'`
+    if [[ -z $error ]]; then echo -e "\e[35mdone\e[0m"; else echo -e "\e[31m$error\e[0m"; fi
   fi
 done
