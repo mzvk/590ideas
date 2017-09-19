@@ -1,6 +1,8 @@
 #!/usr/bin/bash
-
-# MZvk|A544778
+#
+# adds/removes user from freeradius mysql database for 802.1x
+# @Zvk : 2016
+#
 
 fExist(){
   result=$(mysql -u root -p$1 radius -t <<< 'select * from radcheck where username="'$2'"' 2>/dev/null)

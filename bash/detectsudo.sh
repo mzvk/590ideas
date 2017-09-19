@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# detects if command was initiated with sudo
+# @Zvk : 2017
+#
 
 TXT="\_Detected sudo using:\e[31m"
 

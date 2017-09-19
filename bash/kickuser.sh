@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# closes all interactive login shells (-bash) apart from one that script was initiated
+# @Zvk : 2017
+#
 
 declare -A pidmap
 
