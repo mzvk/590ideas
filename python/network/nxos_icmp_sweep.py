@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+## ping scan for Nexus 7k
+## discovers interfaces and pings subnets associated with them
+## Mzvk 2017
+
 import re, threading
 from sys import argv, exit
 from xml.dom import minidom
