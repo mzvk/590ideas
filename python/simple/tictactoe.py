@@ -6,6 +6,20 @@ win = ((0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6))
 def drawgfx(x):
   print "\n  {} | {} | {} \n ---+---+--- \n  {} | {} | {} \n ---+---+--- \n  {} | {} | {}  \n".format(x[6],x[7],x[8],x[3],x[4],x[5],x[0],x[1],x[2])
 
+def chckb(x):
+  for lines in win:
+    if all(x[cell] in psprite for cell in lines):
+      x[lines[0]] = x[lines[1]] = x[lines[2]] = "\033[33m{}\033[0m".format(psprite)
+      print ">> \033[37mYOU WIN!\033[0m"
+      return 1
+    if all(x[cell] in csprite for cell in lines):
+      x[lines[0]] = x[lines[1]] = x[lines[2]] = "\033[33m{}\033[0m".format(csprite)
+      print ">> \033[37mCPU WINS!\033[0m"
+      return 1
+  if all(cell not in ' ' for cell in x):
+      print ">> \033[37mTIE!\033[0m"
+      return 1
+
 def pmove(x):
   while True:
     move = raw_input('> Please select your move [\033[37m1-9\033[0m or \033[37mblank\033[0m to quit]: ')
@@ -24,10 +38,8 @@ def cmove(x):
     best_metric = 0
     for move in cpumove:
       metric = 0
-      mvt = [pwn for pwn in win if move in pwn]
-      for tup in mvt:
-        tuptmp = [val for val in tup if val is not move]
-        assume = set([x[cell] for cell in tuptmp])
+      for tup in [pwn for pwn in win if move in pwn]:
+        assume = set([x[cell] for cell in [val for val in tup if val is not move]])
         if len(assume) == 1 and ' ' in assume:
           metric += 1
         elif len(assume) == 1 and psprite in assume:
@@ -48,20 +60,6 @@ def cmove(x):
     pm = random.randint(0, (len(cpumove) - 1))
     if x[cpumove[pm]] == ' ':
       return cpumove[pm]
-
-def chckb(x):
-  for lines in win:
-    if all(x[cell] in psprite for cell in lines):
-      x[lines[0]] = x[lines[1]] = x[lines[2]] = "\033[33m{}\033[0m".format(psprite)
-      print ">> \033[37mYOU WIN!\033[0m"
-      return 1
-    if all(x[cell] in csprite for cell in lines):
-      x[lines[0]] = x[lines[1]] = x[lines[2]] = "\033[33m{}\033[0m".format(csprite)
-      print ">> \033[37mCPU WINS!\033[0m"
-      return 1
-  if all(cell not in ' ' for cell in x):
-      print ">> \033[37mTIE!\033[0m"
-      return 1
 
 cpumove, bstatus = map(list, zip(*[(x, ' ') for x in xrange(9)]))
 charset = set(['X', 'O'])
@@ -88,18 +86,3 @@ while(True):
     break
   drawgfx(bstatus)
 drawgfx(bstatus)
-
-
-
-#turns = range(2)
-#sprite = ['X', 'O']
-#dispatch = [pmove, cmove]
-
-#while(True):
-#  bstatus[dispatch[turns[0]](bstatus)] = sprite[turns[0]]
-#  if(chckb(bstatus)):
-#    break
-#  drawgfx(bstatus)
-#  turns.append(turns.pop(0))
-
-#drawgfx(bstatus)
