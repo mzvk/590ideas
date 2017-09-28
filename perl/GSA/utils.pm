@@ -30,4 +30,11 @@ sub msk2len {
   return defined $len ? 32 - $len : 32;
 }
 
+sub len2msk {
+  my $len = shift;
+  my $mask;
+  for (my $i = 32; $i >= (32 - $len); $i--){ $mask |= (1 << $i); }
+  return $mask
+}
+
 1;
