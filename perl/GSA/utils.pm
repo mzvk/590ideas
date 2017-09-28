@@ -30,3 +30,4 @@ sub msk2len {
   return defined $len ? 32 - $len : 32;
 }
 
+1;
