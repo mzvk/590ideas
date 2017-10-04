@@ -14,6 +14,10 @@ sub str2int {
 
 sub int2str {
   my $input = shift;
+  if($input !~ /^[0-9]+$/){
+    print "[ERROR] Input $input is not a number - return 0!\n";
+    return 0;
+  }
   my @result;
   for my $idx (0 .. 3){push @result, $input >> (8 * (3 - $idx)) & 0xff;}
   return join(".", @result);
