@@ -5,10 +5,16 @@ use warnings;
 use Exporter qw(import);
 our @EXPORT_OK = qw(str2int int2str msk2len);
 
+my $IPv4RGX = '^((25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])$';
+
 sub str2int {
-  my @input = split /\./, shift;
+  my $ip = shift;
+  if($ip !~ /^(3[0-2]|[12]?[0-9])$|$IPv4RGX/ ){ print "$ip - nope\n"; return 0; }
+  my @input = split /\./, $ip;
   my $result;
-  for my $idx (0 .. $#input) {$result += $input[$idx] << (8 * ($#input - $idx));}
+  for my $idx (0 .. $#input) {
+    $result += $input[$idx] << (8 * ($#input - $idx));
+  }
   return $result;
 }
 
