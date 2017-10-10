@@ -11,7 +11,7 @@ my $i_vig = substr($ARGV[0], 0, 2);
 my $result = "";
 $ARGV[0] =~ tr/a-z/A-Z/;
 if( length($ARGV[0]) % 2 != 0 || length($ARGV[0]) < 4 || $ARGV[0] !~ /^[A-F0-9]+$/ ){
-	print "Incorrect type 7 string";
+	print "Incorrect type 7 string\n";
 	exit;
 }
 for(my $i = 2; $i < length($ARGV[0]); $i += 2){

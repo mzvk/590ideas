@@ -43,13 +43,13 @@ def juniper9Decrypt(inputHash):
 	inputHash = inputHash[len(nibs):]
    return output
 
-def juniper9Encrypt(inputString, index='', junk=''):
+def juniper9Encrypt(inputString, index=''):
    if index == "": idx = jvig[randint(0, len(jvig) - 1)]
+   else: idx = jvig.index(ord(index))
    output = jid + chr(idx)
    for i in xrange(0, jjnk[jvig.index(idx)]):
       output += chr(jvig[randint(0, len(jvig) - 1)])
    prevPos = jvig.index(idx)
-   encPos = 0
    for idx, sChar in enumerate(inputString):
       sChar = ord(sChar)
       gap = []
@@ -75,4 +75,4 @@ def juniper9Check(inputHash):
    return prevPos
 
 if __name__ == '__main__':
-   pass
+  pass
