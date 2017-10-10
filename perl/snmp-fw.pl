@@ -92,7 +92,10 @@ for my $FW (keys %{$FWresult}){
   printf "Type:    %s (%s)\n", $FWresult->{$FW}->{model}, $FWresult->{$FW}->{vendor};
   printf "SW ver.: %s\n", $FWresult->{$FW}->{os};
   printf "Routes:  %d\n", $FWresult->{$FW}->{routes} ? $FWresult->{$FW}->{routes} : 0;
-  printf "Default: %s\n", defined($FWresult->{$FW}->{defif}) ? $FWresult->{$FW}->{defif} : "N/A";
+  if($FWresult->{$FW}->{model} =~ /SRX/){
+    printf "Default: %s\n", defined($FWresult->{$FW}->{defif}) ? $FWresult->{$FW}->{ifidx}->{$FWresult->{$FW}->{defif}} : "N/A";
+  } else { printf "Default: %s\n", defined($FWresult->{$FW}->{defif}) ? $FWresult->{$FW}->{defif} : "N/A"; }
+
   say '======[NETWORKS BEHIND]======';
   for my $rte (@{$FWresult->{$FW}->{rtlist}}){
     if($FWresult->{$FW}->{model} !~ m/ASA/){ next if $rte->{ifi} == $FWresult->{$FW}->{defif}; }
