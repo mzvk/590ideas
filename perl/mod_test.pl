@@ -26,7 +26,7 @@ if($#ARGV < 0) {die "STDERR: No arguemnts\n";}
 #print $#ARGV + 1; 
 
 foreach (@ARGV){
-   if(!$list) {say "------\nTrying to load module -> $_";}
+   if(!$list) {say "-" x `tput cols` ."\nTrying to load module -> $_";}
    try_module($_);
 }
 if($list){
@@ -44,7 +44,7 @@ sub try_module {
    if($@) {
       if($verbose) {say "cannot load module, detailed error:\n".$@; 
       } else {
-         if(!$list) {say "Failed to load $_!";}
+         if(!$list) {say "\033[33mFailed to load \"$_\"!\033[0m";}
          if($list) {push @failed, $_;}
       }
    } else {
