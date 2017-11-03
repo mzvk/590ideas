@@ -9,9 +9,7 @@ my @vig = (0x64,0x73,0x66,0x64,0x3b,0x6b,0x66,0x6f,0x41,0x2c,0x2e,0x69,0x79,0x65
 
 die "No string provided for encryption!\n" unless $ARGV[0];
 my $salt = int(rand(16));
-my $output .= $salt;
+my $output = sprintf "%02d", $salt;
 
-
-#for(my $i = 2; $i < length($ARGV[0]); $i += 2){
-#	$result .= chr(hex(substr($ARGV[0], $i, 2)) ^ $vig[($i_vig++) % 53]);
-#}
+for (split //, shift) {$output .= sprintf "%02X", ord($_) ^ $vig[$salt++ % @vig];}
+print $output;
