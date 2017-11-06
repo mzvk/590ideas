@@ -2,7 +2,7 @@
 #
 # Encrypts plain-text using Juniper based Vigenere algorithm
 # initial Vigenere table, hex values of string: QzF3n6/9CAtpu0OB1IREhcSyrleKvMW8LXx7N-dVbwsY2g4oaJZGUDjiHkq.mPf5T
-# Zvk|A544778
+# MZvk|A544778
 #
 
 use strict;
