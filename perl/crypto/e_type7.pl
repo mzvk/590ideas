@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # Encrypts plain-text using Cisco based Vigenere algorithm
-# initial Vigenere table, hex values of string: QzF3n6/9CAtpu0OB1IREhcSyrleKvMW8LXx7N-dVbwsY2g4oaJZGUDjiHkq.mPf5T
+# initial Vigenere table, hex values of string: dsfd;kfoA,.iyewrkldJKDHSUBsgvca69834ncxv9873254k;fg87
 # MZvk|A544778
 #
 
