@@ -8,7 +8,8 @@ padding = False
 form = None
 
 def usage():
-  print """\033[37mby MZvk
+  print """\033[37mby MZvk v1.0
+
 --[USAGE]---------------------------------------------------------------
 $ __script_name__ <params> <args>
 -- params:
@@ -38,6 +39,9 @@ def len2msk(masklen):
 
 def msk2len(mask):
   return 32 - sum([(0xff ^ int(oct)).bit_length() for oct in mask.split('.')])
+
+if not len(sys.argv[1:]) > 0:
+  usage()
 
 try:
   opts, args = getopt.getopt(sys.argv[1:], 'pbht')
