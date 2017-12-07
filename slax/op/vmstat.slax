@@ -1,0 +1,66 @@
+version 1.1;
+
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm   = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs   = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns slax  = "http://xml.libslax.org/slax";
+
+import "../import/junos.xsl";
+
+/*
+  Version: 0.8 31.03.2017
+  Author: MZvk|A544778
+  Remarks: Reports sysctl vm usage.
+*/
+
+var $local = jcs:open();
+
+match /	{
+   <op-script-results> {
+      var $uptime = jcs:invoke("get-system-uptime-information");
+      var $date = $uptime//current-time/date-time;
+      var $shcmd = "vmstat -m | grep 'sysctl '";
+      var $shell_out = call shell_cmd($cmd = $shcmd);
+      var $vmstat = jcs:regex("[ ]+sysctl[ ]+([0-9]+)[ ]+([0-9])+K[ ]+-[ ]+([0-9]+)[ ]+([0-9,]+)", $shell_out);
+      var $output = "time: " _ $date _ " - sysctl req: " _ $vmstat[4] _ " - InUse: " _ $vmstat[2] _ " - MemUse: " _ $vmstat[3] _ "K - Size: " _ $vmstat[5];
+      var $file-get = <file-get> {
+        <filename> "/var/log/vmstat.log";
+        <encoding> "raw";
+      }
+      var $dblog = jcs:invoke($file-get);
+      if($dblog/file-contents){
+        var $lines = jcs:break-lines($dblog/file-contents);
+        var $delta = jcs:regex(".*InUse: ([0-9]+) - MemUse: ([0-9]+)K.*" , $lines[count($lines)]);
+        var $d_inu = 100 - number($vmstat[2]) - number($delta[2]);
+        var $d_meu = 100 - number($vmstat[3]) - number($delta[3]);
+        call save_file($input = $dblog/file-contents _ $output _ " - delta [" _ $d_inu _ ":" _ $d_meu _ "]\n");
+        if($d_inu > 0){expr jcs:syslog(162, "eScript - Virtual Memory usage is rising - " _ $d_meu _ "K");}
+      } else {call save_file($input = $dblog/file-contents _ $output _ "\n");}
+    }
+    expr jcs:syslog(14, "eScript terminated with success");
+    expr jcs:close($local);
+}
+
+template shell_cmd($cmd="empty_string") {
+  var $shcmdin = <request-shell-execute> {
+    <command> $cmd;
+  }
+  var $result = jcs:execute($local, $shcmdin);
+  expr $result;   
+}
+
+template save_file($input){
+  var $file-save = <file-put> {
+    <filename> "/var/log/vmstat.log"; 
+    <encoding> "ascii"; 
+    <permission> "644"; 
+    <delete-if-exist>; 
+    <file-contents> $input;
+  }
+  var $result = jcs:invoke($file-save);
+  if($result/..//xnm:error){
+    for-each($result/..//xnm:error) {
+      expr jcs:output(message);
+    }
+  }
+}
