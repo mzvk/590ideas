@@ -84,8 +84,7 @@ template check-mem($local){
   call write2mib($local, $instance = "4", $type = "string", $value = $out[5]);
 
   if($out[3] > ($rlimit * ($threshold div 100))){
-/*    expr jcs:syslog(9, "[" _ $script _ "]: dot1xd process uses " _ $out[3] _ "KB, exceeds warning level of " _ $rlimit * ($threshold div 100) _ "KB!"); */
-    expr jcs:output("[" _ $script _ "]: dot1xd process uses " _ $out[3] _ "KB, exceeds warning level of " _ $rlimit * ($threshold div 100) _ "KB!");
+    expr jcs:syslog(9, "[" _ $script _ "]: dot1xd process uses " _ $out[3] _ "KB, exceeds warning level of " _ $rlimit * ($threshold div 100) _ "KB!");
     expr $out;
   }
 }
@@ -93,11 +92,9 @@ template check-mem($local){
 template check-res($local, $input){
   if(contains($input, "Port based Network Access Control started")){
     var $rgx = jcs:regex("Port based Network Access Control started, pid ([0-9]+)", $input);
-    expr jcs:output("[" _ $script _ "]: dot1xd restarted successfully with pid:" _ $rgx[2]);
-/*      expr jcs:syslog(9, "[" _ $script _ "]: dot1xd restarted successfully with pid:" _ $rgx[2]); */
+    expr jcs:syslog(9, "[" _ $script _ "]: dot1xd restarted successfully with pid:" _ $rgx[2]);
   } else {
-/*    expr jcs:syslog(9, "[" _ $script _ "]: Event script terminated: Could not restart dot1xd process!"); */
-    expr jcs:output("[" _ $script _ "]: Event script terminated: Could not restart dot1xd process!");
+    expr jcs:syslog(9, "[" _ $script _ "]: Event script terminated: Could not restart dot1xd process!");
     expr jcs:close($local);
     terminate;
   }
