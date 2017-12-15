@@ -1,0 +1,181 @@
+version 1.1;
+
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+
+import "../import/junos.xsl";
+
+/* 
+   Version: 1.1 - 15.12.2017
+   Author:  MZvk|A544778
+   "I kind of like SLAX now"
+   Event script to monitor usage of "leaky" dot1xd process and restart it if necessary
+*/
+
+var $event-definition = {
+  <event-options> {
+    <generate-event> {
+      <name> "mem-check";
+      <time-of-day> "20:00:00 +0000";
+      <no-drift>;
+    }
+    <policy> {
+      <name> "dot1xd-mem-guard";
+      <events> "mem-check";
+      <then> {
+        <event-script> {
+          <name> "dot1xd_es.slax";
+          <arguments> {
+	    <name> "dry-run";
+	    <value> "no";
+ 	  }
+        }
+      }
+    }
+  }
+}
+
+var $arguments = {
+  <argument> {
+    <name> "rlimit";
+    <description> "Value of hard limit set on process in kB";
+  }
+  <argument> {
+    <name> "threshold";
+    <description> "Memory usage threshold in percent";
+  }
+  <argument> {
+    <name> "dry-run";
+    <description> "Do not restart dot1xd process";
+  }
+}
+
+param $rlimit = 65536;
+param $threshold = 85;
+param $dry-run = "yes";
+
+var $UTIL-MIB = ".1.3.6.1.4.1.2636.3.47.1.1.5.1.2.122.118.107";
+
+var $SSTATUS := {
+  <value>"started";
+  <value>"terminated";
+  <value>"finished-in-policy";
+  <value>"dot1xd-checked";
+  <value>"finished-restarted";
+  <value>"finished-dryrun-on";
+  <value>"finished-still-on-red";
+}
+
+match /	{
+  <event-script-results> {
+
+    var $local = jcs:open();
+    call write2mib($local, $instance = "5", $type = "string", $value = $SSTATUS/value[1]);
+    mvar $memsts;
+    var $rpc-res = <command> "restart dot1x-protocol gracefully all-members";
+    set $memsts = call check-mem($local);
+
+    if(not(jcs:empty($memsts))){
+      if($dry-run == "no"){
+        var $rpc-result = jcs:invoke($rpc-res);
+        call check-res($local, $input = $rpc-result);        
+        set $memsts = call check-mem($local); 
+        if(not(jcs:empty($memsts))){
+          expr jcs:syslog(9, "[" _ $script _ "]: Abnormal dot1xd memory usage after restart!");
+          call write2mib($local, $instance = "5", $type = "string", $value = $SSTATUS/value[7]);
+        }
+      }
+      else { 
+        expr jcs:syslog(9, "[" _ $script _ "]: Running in test mode - dot1xd restart aborted."); 
+        call write2mib($local, $instance = "5", $type = "string", $value = $SSTATUS/value[6]);
+      }
+    }
+    else { call write2mib($local, $instance = "5", $type = "string", $value = $SSTATUS/value[3]); }
+  }
+}
+
+template check-mem($local){
+  var $line = jcs:break-lines(jcs:invoke(<command> "show system process extensive"));  
+  mvar $out;
+  mvar $cnt = 0;
+
+  for-each($line[contains(., "dot1xd")]){
+    set $out = .;
+    set $cnt = $cnt + 1;
+  }
+  if(jcs:empty($out)){
+    expr jcs:syslog(9, "[" _ $script _ "]: Event script terminated: dot1xd process is not runnig.");
+    call write2mib($local, $instance = "5", $type = "string", $value = $SSTATUS/value[2]);
+    expr jcs:close($local);
+    terminate;
+  }
+  if(not($cnt == 1)){
+    expr jcs:syslog(9, "[" _ $script _ "]: Event script terminated: found multiple dot1xd processes.");
+    call write2mib($local, $instance = "5", $type = "string", $value = $SSTATUS/value[2]);
+    expr jcs:close($local);
+    terminate;
+  }
+  set $out = jcs:regex("^ *([0-9]+) +root.* ([0-9]+)K +([0-9]+)K.*([0-9]{1,2}\.[0-9]{2}%)", $out);
+
+  var $mib = call clearmib($local, $mibname = $UTIL-MIB);
+  call write2mib($local, $instance = "1", $type = "string", $value = $out[2]);
+  call write2mib($local, $instance = "2", $type = "string", $value = $out[3]);
+  call write2mib($local, $instance = "3", $type = "string", $value = $out[4]);
+  call write2mib($local, $instance = "4", $type = "string", $value = $out[5]);
+  call write2mib($local, $instance = "5", $type = "string", $value = $SSTATUS/value[4]);
+
+  if($out[3] > ($rlimit * ($threshold div 100))){
+    expr jcs:syslog(9, "[" _ $script _ "]: dot1xd process uses " _ $out[3] _ "KB, exceeds warning level of " _ $rlimit * ($threshold div 100) _ "KB!");
+    expr $out;
+  }
+}
+
+template check-res($local, $input){
+  if(contains($input, "Port based Network Access Control started")){
+    var $rgx = jcs:regex("Port based Network Access Control started, pid ([0-9]+)", $input);
+    call write2mib($local, $instance = "5", $type = "string", $value = $SSTATUS/value[5]);
+    expr jcs:syslog(9, "[" _ $script _ "]: dot1xd restarted successfully with pid:" _ $rgx[2]);
+  } else {
+    expr jcs:syslog(9, "[" _ $script _ "]: Event script terminated: Could not restart dot1xd process!");
+    call write2mib($local, $instance = "5", $type = "string", $value = $SSTATUS/value[2]);
+    expr jcs:close($local);
+    terminate;
+  }
+} 
+
+template write2mib($local, $instance, $type, $value){
+  var $mib = "zvk" _ $instance;
+  var $rpc-snmp = {
+    <request-snmp-utility-mib-set> {
+      <instance> $mib;
+      <object-type> $type;
+      <object-value> $value;
+    }
+  }
+  var $results = jcs:execute($local, $rpc-snmp);
+}
+
+template clearmib($local, $mibname){
+  var $snmpwalk = {
+    <walk-snmp-object> {
+      <snmp-object-name> $mibname;
+    }
+  }
+  var $mib = jcs:invoke($snmpwalk);
+  for-each($mib/snmp-object){
+    var $itype = jcs:regex("jnxUtil(.*)Value", name);
+    call clear-instance($local, $instance = ./index/index-value, $type = translate($itype[2],'ABCDEFGHIJKLMNOPRSTUVWXYZ', 'abcdefghijklmnoprstuvwxyz'));
+  }
+}
+
+template clear-instance($local, $instance, $type){
+  var $snmpclear = {
+    <request-snmp-utility-mib-clear>{
+      <instance> $instance;
+      <object-type> $type;
+    }
+  }
+  var $result = jcs:execute($local, $snmpclear);
+}
+
