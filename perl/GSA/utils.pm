@@ -9,24 +9,23 @@ my $IPv4RGX = '^((25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1
 
 sub str2int {
   my $ip = shift;
-  if($ip !~ /^(3[0-2]|[12]?[0-9])$|$IPv4RGX/ ){ print "$ip - nope\n"; return 0; }
+  if($ip !~ /^(3[0-2]|[12]?[0-9])$|$IPv4RGX/ ){ print "[ERROR] Not IPv4 address: $ip!\n"; return 0; }
   my @input = split /\./, $ip;
   my $result;
   for my $idx (0 .. $#input) {
     $result += $input[$idx] << (8 * ($#input - $idx));
   }
   return $result;
+#  return unpack("N", $ip);
 }
 
 sub int2str {
   my $input = shift;
-  if($input !~ /^[0-9]+$/){
-    print "[ERROR] Input $input is not a number - return 0!\n";
-    return 0;
-  }
+  if($input !~ /^[0-9]+$/){ print "[ERROR] Input $input is not a number - return 0!\n"; return 0; }
   my @result;
   for my $idx (0 .. 3){push @result, $input >> (8 * (3 - $idx)) & 0xff;}
   return join(".", @result);
+#  return join ".", unpack 'C4', pack 'N', $input;
 }
 
 sub msk2len {
