@@ -6,13 +6,16 @@
 
 action(){
   [[ ! $1 =~ ^a[0-9]{6}$ ]] && \
-    echo -e "\e[31m*ERROR:\e[0m \e[33m$user\e[0m cannot be modified by script." && return 0
-  [[ -z $(grep $1 <(getent passwd)) ]] && \
-    echo -e "\e[31m*ERROR:\e[0m \e[34m$user\e[0m does not exist." && return 0
+    echo -e "\e[31m*ERROR:\e[0m \e[36m$user\e[0m cannot be modified by script." && return 0
+  [[ -z $(grep "$1" <(getent passwd)) ]] && \
+    echo -e "\e[31m*ERROR:\e[0m \e[36m$user\e[0m does not exist." && return 0
   case $2 in
     r) echo -e "\e[33m*DONE:\e[0m Restoring user $1" && usermod -e "" $1 2>/dev/null ;;
     e) echo -e "\e[33m*DONE:\e[0m Suspending user $1" && usermod -e 1 $1 2>/dev/null ;;
     d) echo -e "\e[33m*DONE:\e[0m Removing user $1 [dry run]";;
+    b) echo -e "\e[33m*DONE:\e[0m User $1 is banned"
+       [[ `grep -q '. /etc/ban-profile/' /home/$1/.profile` ]] && echo '. /etc/ban-profile/' >> /home/$1/.profile ;;
+    u) echo -e "\e[33m*DONE:\e[0m User $1 in unbanned" && sed -i '/\. \/etc\/ban-profile/d' /home/$1/.profile ;;
     *) ;;
   esac
 }
@@ -39,9 +42,9 @@ usage(){
  ACTIONS:
   -e   Locks account by setting it to be expired
   -r   Unlocks account by clearing expiriation date
-  -b   Ban user account      [not implemented]
-  -u   Unban user account    [not implemented]
-  -d   Removes user account  [not implemented]
+  -b   Ban user account
+  -u   Unban user account (must be banned with same method as -b)
+  -d   Removes user account  [NOT IMPLEMENTED]
 +--------------------------------------------------------------------------+
 EOL
   exit 0
@@ -59,7 +62,7 @@ check_status() {
   local sts=0
   since1970=$(($(date --utc --date " " +%s)/86400))
   bn=`grep "$1" /etc/shadow | cut -d: -f8`
-  [[ -n `grep "exit" /home/$1/.bashrc` ]] && ((sts+=2))
+  [[ -n `grep ". /etc/ban-profile" /home/$1/.profile` ]] && ((sts+=2))
   [[ ${bn:-$since1970} < $since1970 ]] && ((sts+=1))
   case $sts in
     1) echo "*";;
@@ -71,9 +74,9 @@ check_status() {
 export -f check_status
 
 if [ "$EUID" -eq 0 ]; then
-  while getopts ":e:r:d:hs" opt; do
+  while getopts ":e:r:d:b:u:hs" opt; do
     case "${opt}" in
-      e|r|d) [[ -z "$user" ]] && user=$OPTARG && optdo=$opt && action $user $opt || \
+      e|r|d|b|u) [[ -z "$user" ]] && user=$OPTARG && optdo=$opt && action $user $opt || \
              echo -e "\e[34m*INFO*:\e[0m Single action is permitted, ignoring: \"-$opt $OPTARG\".";;
           s) silent=1 ;;
           h) usage ;;
@@ -108,3 +111,6 @@ if [[ -z "$silent" ]]; then
     echo -e " \e[31m#\e[0m - expired & banned"
   fi
 fi
+
+#ideas
+# -a/d - add/del account
