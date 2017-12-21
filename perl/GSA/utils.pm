@@ -10,7 +10,7 @@ my $IPv4RGX = '^(?:(?>25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\.){3}(?>25[0-5]|2[0-4][
 sub str2int {
   my $ip = shift;
   if($ip !~ /^(3[0-2]|[12]?[0-9])$|$IPv4RGX/ ){ print "[ERROR] Not IPv4 address: $ip!\n"; return 0; }
-  return unpack ('N', pack ('CCCC', split /\./, $ip));
+  return unpack ('N', pack ('C4', split /\./, $ip));
 }
 
 sub int2str {
