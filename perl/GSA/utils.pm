@@ -42,6 +42,7 @@ sub len2msk {
   my $mask;
   for (my $i = 32; $i >= (32 - $len); $i--){ $mask |= (1 << $i); }
   return $mask
+#  return 2**32 - 2**(32 - $len);
 }
 
 1;
