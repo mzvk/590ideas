@@ -1,5 +1,8 @@
 #!/usr/bin/env perl
 
+## Unfinished PoC script which retrieves routing information from SRX/ASA/SSG firewalls via SNMP
+## Mzvk 2017
+
 ##------------
 ## MODULES ###
 use feature qw(say);

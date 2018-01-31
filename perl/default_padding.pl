@@ -1,5 +1,8 @@
 #!/usr/bin/env perl
 
+## Default padding function
+## Mzvk 2017
+
 use strict refs;
 use warnings;
 

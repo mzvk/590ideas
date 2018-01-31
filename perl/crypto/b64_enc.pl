@@ -1,8 +1,7 @@
 #!/usr/bin/env perl
-#
-# Perl base64 implementation (encoder)
-# MZvk|A544778
-#
+
+## Perl base64 implementation (encoder)
+## MZvk 2017
 
 use strict;
 use warnings;

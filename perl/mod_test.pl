@@ -1,6 +1,8 @@
 #!/usr/bin/perl
-#Small script to check if perl modules can be loaded | @Zvk:2016
-#Also some things were written to learn perl a little bit
+
+## Small script to check if perl modules can be loaded
+## Also some things were written to learn perl a little bit
+## MZvk 2016
 
 use feature qw(say);
 use strict;
