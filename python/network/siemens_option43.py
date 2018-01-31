@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+## Translates Siemens specific DHCP Option43
+## Mzvk 2017
+
 import sys, re
 
 def valCheck(value):

@@ -1,5 +1,6 @@
 #!/usr/bin/python
-# Mzvk:2016
+
+# Mzvk 2016
 # - Simple script to connect to the existing VM VMRC
 # - Python conversion of bash script
 # Note: used raw_input, because written for pyton 2.7.9 :(

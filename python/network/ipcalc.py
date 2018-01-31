@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+## Simple IP subnet calculator
+## Mzvk 2017
+
 import sys, re, getopt
 from functools import reduce
 

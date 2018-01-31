@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-#
-# zvk@2018
-# Converts MAC addresses from Juniper PFE to readable format
-#
+## Converts MAC addresses from Juniper PFE to readable format
+## Mzvk 2018
 
 import sys, re
 
