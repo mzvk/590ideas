@@ -57,4 +57,3 @@ for (0 .. $#string){
 }
 
 print $output;
-
