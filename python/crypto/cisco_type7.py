@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-#
-# zvk@2017
-# pseudo crypto module for Cisco weak password
-#
+
+## Pseudo crypto module for Cisco weak password
+## Mzvk 2017
 
 from re import match
 from random import randint
