@@ -1,0 +1,75 @@
+version 1.1;
+
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm   = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs   = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns slax  = "http://xml.libslax.org/slax";
+
+import "../import/junos.xsl";
+
+/*
+  Version: 1.0 28.02.2018
+  Author: MZvk|A544778
+  Remarks: Monitors authentication sessions and saves information about ones in HELD state
+*/
+
+var $event-definition = {
+  <event-options> {
+    <generate-event> {
+      <name> "held-check";
+      <time-interval> "600";
+    }
+    <policy> {
+      <name> "held-policy";
+      <events> "held-check";
+      <then> {
+        <event-script> {
+          <name> "held_es.slax";
+ 	}
+      }
+    }
+  }
+}
+
+var $local = jcs:open();
+
+match /	{
+   <event-script-results> {
+    var $rpc = {
+      <get-dot1x-interface-information> {
+        <detail>;
+       }
+    }
+    var $authState = jcs:invoke($rpc);
+    var $uptime = jcs:invoke("get-system-uptime-information");
+    var $date = $uptime//current-time/date-time;
+
+    var $result := {
+      for-each ($authState/interface/supplicant-list/supplicant[supplicant-state == 'Held']) {
+        <value> $date _ "  -  " _ ./supplicant-mac-address _ "/" _ ./supplicant-name _ ":" _ ../../interface-name _ " [" _ ./supplicant-state _ "/" _ ./backend-administrative-state _ "/" _ ./authentication-method _ "] : " _ ./session-reauthentication-interval _ "/" _ ./reauthentication-due;
+      }
+    }
+    var $file-get = <file-get> {
+      <filename> "/var/log/held.log";
+      <encoding> "raw";
+    }
+    var $dblog = jcs:invoke($file-get);
+    call save_file($input = $dblog/file-contents _ $result _ "\n");
+  }
+}
+
+template save_file($input){
+  var $file-save = <file-put> {
+    <filename> "/var/log/held.log"; 
+    <encoding> "ascii"; 
+    <permission> "644"; 
+    <delete-if-exist>; 
+    <file-contents> $input;
+  }
+  var $result = jcs:invoke($file-save);
+  if($result/..//xnm:error){
+    for-each($result/..//xnm:error) {
+      expr jcs:output(message);
+    }
+  }
+}
