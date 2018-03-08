@@ -26,7 +26,7 @@ $ __script_name__ <params> <args>
   sys.exit()
 
 def str2int(ipStr):
-  return reduce((lambda x, y: x | y), [int(oct) << (24 - 8 * idx) if int(oct) < 256 and int(oct) > 0 else 'x' for idx, oct in enumerate(ipStr.split('.'))])
+  return reduce((lambda x, y: x | y), [int(oct) << (24 - 8 * idx) if int(oct) < 256 and int(oct) >= 0 else 'x' for idx, oct in enumerate(ipStr.split('.'))])
 
 def int2str(ipInt):
   if form == 'hex':
