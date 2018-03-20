@@ -12,4 +12,5 @@ try:
 except ValueError:
   doors = DEFAULT_DOORS
 
-print [door for door in xrange(1, doors + 1) if not (door ** 0.5) % 1]
+print "Doors that remained open:"
+print ', '.join([str(door) for door in xrange(1, doors + 1) if not (door ** 0.5) % 1])
