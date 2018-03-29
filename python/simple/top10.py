@@ -73,5 +73,6 @@ if __name__ == "__main__":
   if(len(sys.argv[1:]) > 0):
     data = top10(sys.argv[1])
     print " ### TOP-TALKER ### "
-    for value in data:
-      print "{:<48}: {} Bytes".format(value[0], value[1])
+    for idx, value in enumerate(data):
+      wrn = '\033[31m' if idx < 3 else ''
+      print "{}{:<48}: {} Bytes{}".format(wrn, value[0], value[1], '\033[0m')
