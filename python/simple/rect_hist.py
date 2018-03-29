@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
+# Finds largest rectangle in histogram
+# also prints initial histogram
+# MZvk 2018
+
 import sys
 hist = [2, 5, 4, 2, 3, 1, 1, 1]
 
-#remove/rework it after LDN!
 def draw(hist):
   print '   '+'-'*(len(hist) * 3 + 1)
   for hgh in xrange(max(hist), 0, -1):

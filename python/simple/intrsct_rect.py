@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# Find rectangle as a result of intersection of other two
+# MZvk 2018
+
 rect1 = ((1,1), (1,4), (4,1), (4,4))
 rect2 = ((3,3), (3,6), (6,3), (6,6))
 
