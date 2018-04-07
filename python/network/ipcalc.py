@@ -83,5 +83,6 @@ for ip in args:
   print '| subnet wildcard    | {}'.format(int2str(~mask))
   print '| subnet net address | {}'.format(int2str(netaddr))
   print '| subnet broadcast   | {}'.format(int2str(bcstaddr))
-  print '| usable range       | {} - {}'.format(int2str(netaddr + 1), int2str(bcstaddr - 1))
+  print '| usable range       | {} - {}'.format(int2str(netaddr + 1) if int(ipin[1]) < 31 else int2str(netaddr),
+                                                int2str(bcstaddr - 1) if int(ipin[1]) < 31 else int2str(bcstaddr))
   print '+'+'-'*20+'+'+'-'*nline
