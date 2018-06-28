@@ -4,8 +4,8 @@
 # @Zvk : 2016
 #
 
-OSVR=`hostnamectl | grep System | awk '{print $3}'`' '`[ -r /etc/debian_version ] && cat /etc/debian_version`
-CHAS=`hostnamectl | grep Chassis | awk '{print $2}'`
+OSVR=`hostnamectl | awk '/System/{print $3}'`' '`[ -r /etc/debian_version ] && cat /etc/debian_version`
+CHAS=`hostnamectl | awk '/Chassis/{print $2}'`
 VIRT=`hostnamectl | grep Virtualization | awk '{print $2}'`
 LOAD=`cat /proc/loadavg | awk '{print $1" "$2" "$3}'`
 MEMU=`free | awk '/Mem:/ { printf "%05.2f%%", ($2-$4-$6-$7)/$2*100 }'`
