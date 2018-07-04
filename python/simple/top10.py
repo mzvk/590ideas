@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sys
 
 # Simple Top10 implementation using sort, takes filename as argument
