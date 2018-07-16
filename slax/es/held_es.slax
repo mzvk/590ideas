@@ -54,7 +54,9 @@ match /	{
       <encoding> "raw";
     }
     var $dblog = jcs:invoke($file-get);
-    call save_file($input = $dblog/file-contents _ $result _ "\n");
+    if(not(jcs:empty($result))){
+      call save_file($input = $dblog/file-contents _ $result _ "\n");
+    }
   }
 }
 
