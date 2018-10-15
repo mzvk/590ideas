@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash --
 #
 # Prints configured users (uid above 1000), input is taken from passwd database
 # @MZvk : 2017 [A54477]
@@ -26,16 +26,13 @@ usage(){
  INFO: Lists configured lab users with uid above 1000, also when  options
  are provided, user account can be modified.  For options usage, root
  priviliages are required!
-
  Only one action is permitted, rest will be ignored.
  Only users which login is DAS ID, can be modified.
  Others must be modified manually to avoid misconfig.
-
  USAGE: $(basename $0) [OPTIONS] [[ACTIONS] <user_id>]
  Examples:
         $(basename $0)
         $(basename $0) -s -e a000001
-
  OPTIONS:
   -h   Prints this help message
   -s   Works in silent mode (does not display user table)

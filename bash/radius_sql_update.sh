@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash --
 #
 # adds/removes user from freeradius mysql database for 802.1x
 # @Zvk : 2016

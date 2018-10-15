@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash --
 #
 # prints all active login shells for either all or specified users
 # @Zvk A544778

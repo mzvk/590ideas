@@ -1,9 +1,12 @@
-#!/bin/bash
+#!/bin/bash --
 #
 # Gets VM list from ESX and connects to VMRC of selected one
 # Note: there's no error checking!
 # @Zvk : 2016
 #
+
+$user='root'
+$host='192.168.242.10'
 
 counter=0
 moref=()
@@ -11,7 +14,7 @@ names=()
 guest=()
 
 echo -n "> Retriving VM list... "
-output=$(ssh root@192.168.242.10 'vim-cmd vmsvc/getallvms')
+output=$(ssh $user@$host 'vim-cmd vmsvc/getallvms')
 grep_test=$(echo $output | grep -oP "^[a-zA-Z]+")
 if [ $grep_test == Vmid ]; then
 #   awk '{printf ("%s\t\t%s\t\t%s\n", $1, $2, $5)}' <(echo "$output")
@@ -39,4 +42,4 @@ for ((i=0; i<$counter; i++)); do
 done
 read -s vmid
 echo "Trying to connect to ${names[$vmid]} (you will be prompted for password)"
-vmrc -H 192.168.242.10 -U root -M ${moref[$vmid]}
+vmrc -H $host -U $user -M ${moref[$vmid]}

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash --
 #
 # motd for lab vms
 # @Zvk : 2016

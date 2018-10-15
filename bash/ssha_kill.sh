@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash --
 #
 # clears orphaned ssh-agent and apache process left after X-sessions
 # @Zvk A544778
