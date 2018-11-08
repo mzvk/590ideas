@@ -2,6 +2,7 @@
 import re, sys
 
 ## Simple IPv4 address validator, wanted to use radix, but overhead is just not worth it - for single run
+## Used really to test IPv4 regular expression
 ## Mzvk 2018
 
 #sys.exit:
