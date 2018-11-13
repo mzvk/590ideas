@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# BruteForce sudoku sovler using Depth First Search (DFS)
+# MZvk 2018
+
 def getSudoku(file):
   with open(file) as f:
     contents = f.read()
@@ -42,7 +45,7 @@ class SudokuGrid(object):
     for value in xrange(1, 10):
       if self.checkInsert(value, pos):
         self.grid[pos] = value
-        if self.solve(self.getNext(pos + 1)) or pos == 80: return 1
+        if pos == 80 or self.solve(self.getNext(pos + 1)): return 1
       self.grid[pos] = 0
     return 0
 
