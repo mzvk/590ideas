@@ -22,6 +22,6 @@ else
     if [[ -z $(getent passwd | grep -e "^$arg:") ]]; then echo -e "\e[33mUser $arg does not exist on this system.\e[0m" && continue; fi
     psu=`ps -fu $arg | grep -E -- "\-(ba)?sh$" | awk '{print $2}'`
     if [[ -z $psu ]]; then echo -e "\e[33mUser $arg does not have active login shells.\e[0m" && continue; fi
-    echo -e "$arg - ${#pids[@]} active login shell(s): \e[31m"$psu"\e[0m"
+    echo -e "$arg - $((${#psu[@]} + 1)) active login shell(s): \e[31m"$psu"\e[0m"
   done
 fi
