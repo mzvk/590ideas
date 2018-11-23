@@ -40,7 +40,7 @@ else
     psu=`ps -fu $arg | grep "\-bash$" | awk '{print $2}'`
     if [[ -z $psu ]]; then echo -e "\e[33mUser $arg does not have active login shells.\e[0m" && continue; fi
     pids+=($psu)
-    echo -e "$arg - ${#pids[@]} active login shell(s): \e[31m"$psu"\e[0m"
+    echo -e "$arg - $((${#pdu[@]} + 1)) active login shell(s): \e[31m"$psu"\e[0m"
   done
 fi
 echo " ** Closing all sessions **"
