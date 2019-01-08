@@ -56,4 +56,5 @@ Sudoku = SudokuGrid(getSudoku("3.sdk"))
 if(Sudoku.solve()):
   print Sudoku
 else:
-  print "Impossibru!"
+  print "\nImpossibru! Could not solve this sudoku."
+
