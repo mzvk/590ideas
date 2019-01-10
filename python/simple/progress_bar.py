@@ -25,11 +25,11 @@ def main():
     progressBar(0, len(files), title = 'Checking in progress:')
   except OSError, err:
     print err
-    sys.exit()             
+    sys.exit()
   for idx, cfgfile in enumerate(files):
     progressBar(idx + 1, len(files), title = 'Checking in progress:')
     target = wasteTime('/'.join([configDir, cfgfile]))
-    if not (len(target) > 0):              
+    if not (len(target) > 0):
       continue
   print "\033[31mFailed!\033[0m I do not care!\033[?25h"
 
