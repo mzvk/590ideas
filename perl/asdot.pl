@@ -6,8 +6,6 @@
 use strict refs;
 use warnings;
 
-#4294967295
-
 die "No input.\n"if !$ARGV[0];
 
 if($ARGV[0] =~ m/^([0-9]{0,5})\.([0-9]{0,5})$/ && $1 & $2){ 
