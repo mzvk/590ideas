@@ -25,7 +25,6 @@ if($verbose and $list) {
 }
 
 if($#ARGV < 0) {die "STDERR: No arguemnts\n";}
-#print $#ARGV + 1; 
 
 foreach (@ARGV){
    if(!$list) {say "-" x `tput cols` ."\nTrying to load module -> $_";}
