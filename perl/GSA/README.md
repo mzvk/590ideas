@@ -1,6 +1,7 @@
 OLD VERSION OF FUNCTIONS, documented for so I can reuse ideas if they will be such necessity.
 
-## str2int
+## str2int - before pack/unpack
+```
 sub str2int {
   my $ip = shift;
   if($ip !~ /^(3[0-2]|[12]?[0-9])$|$IPv4RGX/ ){ print "[ERROR] Not IPv4 address: $ip!\n"; return 0; }
@@ -11,8 +12,10 @@ sub str2int {
   }
   return $result;
 }
+```
 
-## int2str
+## int2str - before pack/unpack
+```
 sub int2str {
   my $input = shift;
   if($input !~ /^[0-9]+$/){ print "[ERROR] Input $input is not a number - return 0!\n"; return 0; }
@@ -21,4 +24,4 @@ sub int2str {
   for my $idx (0 .. 3){push @result, $input >> (8 * (3 - $idx)) & 0xff;}
   return join(".", @result);
 }
-
+```
