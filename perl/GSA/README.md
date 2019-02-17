@@ -27,6 +27,7 @@ sub int2str {
   return join(".", @result);
 }
 ```
+
 ## len2msk
 #### before pack/unpack
 ```perl
@@ -39,3 +40,14 @@ sub len2msk {
   return $mask
 }
 ```
+
+## asnconv
+#### before pack/unpack
+sub asnconv {
+  my $input = shift // return 0;
+  if($input =~ m/^([0-9]{0,5})\.([0-9]{0,5})$/ && ($1 | $2) && $1 < 65536 && $2 < 65536){
+    return ($input << 16) + $2;
+  } elsif($input =~ m/^[1-9][0-9]{0,9}$/ && $input <= 4294967295){
+    return ($input >> 16) . "." . ($input & 0xFFFF)
+  } else { print "[ERROR] Wrong ASN number (format or value)!\n"; return 0; }
+}
