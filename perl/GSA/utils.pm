@@ -14,7 +14,7 @@ sub asnconv {
     return unpack 'N', pack 'n2', split /\./, $input;
   } elsif($input =~ m/^[1-9][0-9]{0,9}$/ && $input <= 4294967295){
     return join ".", unpack "n2", pack "N", $input;
-  } else { print "[ERROR] Wrong ASN number (format or value)\n"; return 0; }
+  } else { print "[ERROR] Wrong ASN number (format or value)!\n"; return 0; }
 }
 
 sub str2int {
