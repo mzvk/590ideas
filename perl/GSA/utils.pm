@@ -10,12 +10,11 @@ my $IPv4RGX = '^(?:(?>25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\.){3}(?>25[0-5]|2[0-4][
 
 sub asnconv {
   my $input = shift // return 0;
-
   if($input =~ m/^([0-9]{0,5})\.([0-9]{0,5})$/ && ($1 | $2) && $1 < 65536 && $2 < 65536){
     return unpack 'N', pack 'n2', split /\./, $input;
   } elsif($input =~ m/^[1-9][0-9]{0,9}$/ && $input <= 4294967295){
     return join ".", unpack "n2", pack "N", $input;
-  } else { die "ASN Is neither AS-PLAIN [1-4294967295] nor AS-DOT [(0-65535).(0-65535)] or equals 0!\n"; return 0; }
+  } else { print "[ERROR] Wrong ASN number (format or value)\n"; return 0; }
 }
 
 sub str2int {
