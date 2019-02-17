@@ -4,22 +4,28 @@ use strict;
 use warnings;
 
 use Exporter qw(import);
-our @EXPORT_OK = qw(str2int int2str msk2len len2msk);
+our @EXPORT_OK = qw(str2int int2str msk2len len2msk asnconv);
 
 my $IPv4RGX = '^(?:(?>25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\.){3}(?>25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])$';
 
 sub asnconv {
+  my $input = shift // return 0;
 
+  if($input =~ m/^([0-9]{0,5})\.([0-9]{0,5})$/ && ($1 | $2) && $1 < 65536 && $2 < 65536){
+    return unpack 'N', pack 'n2', split /\./, $input;
+  } elsif($input =~ m/^[1-9][0-9]{0,9}$/ && $input <= 4294967295){
+    return join ".", unpack "n2", pack "N", $input;
+  } else { die "ASN Is neither AS-PLAIN [1-4294967295] nor AS-DOT [(0-65535).(0-65535)] or equals 0!\n"; return 0; }
 }
 
 sub str2int {
-  my $ip = shift;
+  my $ip = shift // return 0;
   if($ip !~ /^(3[0-2]|[12]?[0-9])$|$IPv4RGX/ ){ print "[ERROR] Not IPv4 address: $ip!\n"; return 0; }
   return unpack ('N', pack ('C4', split /\./, $ip));
 }
 
 sub int2str {
-  my $input = shift;
+  my $input = shift // return 0;
   if($input !~ /^[0-9]+$/){ print "[ERROR] Input $input is not a number - return 0!\n"; return 0; }
   if($input > 4294967295){ print "[ERROR] Input $input is larger then 32bits - return 0!\n"; return 0; }
   return join ".", unpack 'C4', pack 'N', $input;
@@ -37,7 +43,7 @@ sub msk2len {
 }
 
 sub len2msk {
-  my $len = shift;
+  my $len = shift // return 0;
   if($len !~ /^[0-9]+$/){ print "[ERROR] Mask length $len is not a number - return 0!\n"; return 0; }
   if($len > 32){ print "[ERROR] Mask length cannot be greater then 32 - return 0!\n"; return 0; }
   return join ".", unpack 'C4', pack 'N', 2**32 - 2**(32 - $len);
