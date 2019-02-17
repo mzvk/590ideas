@@ -2,7 +2,7 @@ OLD VERSION OF FUNCTIONS, documented for so I can reuse ideas if they will be su
 
 ## str2int 
 #### before pack/unpack
-```
+```perl
 sub str2int {
   my $ip = shift;
   if($ip !~ /^(3[0-2]|[12]?[0-9])$|$IPv4RGX/ ){ print "[ERROR] Not IPv4 address: $ip!\n"; return 0; }
@@ -17,7 +17,7 @@ sub str2int {
 
 ## int2str 
 #### before pack/unpack
-```
+```perl
 sub int2str {
   my $input = shift;
   if($input !~ /^[0-9]+$/){ print "[ERROR] Input $input is not a number - return 0!\n"; return 0; }
@@ -29,7 +29,7 @@ sub int2str {
 ```
 ## len2msk
 #### before pack/unpack
-```
+```perl
 sub len2msk {
   my $len = shift;
   if($len !~ /^[0-9]+$/){ print "[ERROR] Mask length $len is not a number - return 0!\n"; return 0; }
