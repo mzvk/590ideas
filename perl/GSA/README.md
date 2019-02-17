@@ -43,6 +43,7 @@ sub len2msk {
 
 ## asnconv
 #### before pack/unpack
+```perl
 sub asnconv {
   my $input = shift // return 0;
   if($input =~ m/^([0-9]{0,5})\.([0-9]{0,5})$/ && ($1 | $2) && $1 < 65536 && $2 < 65536){
@@ -51,3 +52,4 @@ sub asnconv {
     return ($input >> 16) . "." . ($input & 0xFFFF)
   } else { print "[ERROR] Wrong ASN number (format or value)!\n"; return 0; }
 }
+```
