@@ -1,6 +1,7 @@
 OLD VERSION OF FUNCTIONS, documented for so I can reuse ideas if they will be such necessity.
 
-## str2int - before pack/unpack
+## str2int 
+#### before pack/unpack
 ```
 sub str2int {
   my $ip = shift;
@@ -14,7 +15,8 @@ sub str2int {
 }
 ```
 
-## int2str - before pack/unpack
+## int2str 
+#### before pack/unpack
 ```
 sub int2str {
   my $input = shift;
