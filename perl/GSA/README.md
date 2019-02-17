@@ -27,3 +27,15 @@ sub int2str {
   return join(".", @result);
 }
 ```
+## len2msk
+#### before pack/unpack
+```
+sub len2msk {
+  my $len = shift;
+  if($len !~ /^[0-9]+$/){ print "[ERROR] Mask length $len is not a number - return 0!\n"; return 0; }
+  if($len > 32){ print "[ERROR] Mask length cannot be greater then 32 - return 0!\n"; return 0; }
+  my $mask;
+  for (my $i = 32; $i >= (32 - $len); $i--){ $mask |= (1 << $i); }
+  return $mask
+}
+```

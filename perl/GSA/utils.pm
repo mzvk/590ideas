@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Exporter qw(import);
-our @EXPORT_OK = qw(str2int int2str msk2len);
+our @EXPORT_OK = qw(str2int int2str msk2len len2msk);
 
 my $IPv4RGX = '^(?:(?>25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\.){3}(?>25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])$';
 
@@ -38,14 +38,12 @@ sub msk2len {
 
 sub len2msk {
   my $len = shift;
-  if($len !~ /^[0-9]+$/){
-    print "[ERROR] Mask length $len is not a number - return 0!\n";
-    return 0;
-  }
-  my $mask;
-  for (my $i = 32; $i >= (32 - $len); $i--){ $mask |= (1 << $i); }
-  return $mask
-#  return 2**32 - 2**(32 - $len);
+  if($len !~ /^[0-9]+$/){ print "[ERROR] Mask length $len is not a number - return 0!\n"; return 0; }
+  if($len > 32){ print "[ERROR] Mask length cannot be greater then 32 - return 0!\n"; return 0; }
+#  my $mask;
+#  for (my $i = 32; $i >= (32 - $len); $i--){ $mask |= (1 << $i); }
+#  return $mask
+  return join ".", unpack 'C4', pack 'N', 2**32 - 2**(32 - $len);
 }
 
 1;
