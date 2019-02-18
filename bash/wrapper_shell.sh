@@ -10,10 +10,10 @@ cust_interpr="/usr/bin/python"
 
 doshit() { [[ $? -ne 0 ]] && echo "missing interpreter - exit"; }
 
-[[ `which $cust_interpr` ]] || unset cust_interpr
 trap "doshit" EXIT
-{ wrap_interpr=${INTERPR:-${cust_interpr?}}; } 2> /dev/null
-trap "" EXIT
+[[ `which $cust_interpr` ]] || unset cust_interpr
+{ wrap_interpr=${INTERPR:-${cust_interpr?}}; }  2> /dev/null
+trap - EXIT
 
 script=$1
 shift
