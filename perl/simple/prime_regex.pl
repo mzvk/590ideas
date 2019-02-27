@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-## Trying out prime checking regex
+## Trying out prime checking regex - it works!
 ## Mzvk 2018
 
 use strict;
