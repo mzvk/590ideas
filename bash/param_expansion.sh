@@ -4,7 +4,7 @@
 # @Zvk : 2019
 #
 
-read -p "Wanna go nuts? (y|n): " choice
+read -p "Wanna go nuts? (y|N): " choice
 [[ $choice =~ ^[YNyn]([Ee][Ss]|[Oo])?$ ]] && choice=${choice:0:1} || unset choice
 choice=${choice:-n}
 

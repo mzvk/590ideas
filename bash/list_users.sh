@@ -1,4 +1,4 @@
-#!/bin/bash --
+#!/bin/bash
 #
 # Prints configured users (uid above 1000), input is taken from passwd database
 # @MZvk : 2017 [A54477]
@@ -91,14 +91,14 @@ if [[ -z "$silent" ]]; then
   getent passwd | awk -v epoch="$since1970" -F'[:,]' '$3 >= 1000 && $3 < 5000 \
                 {ch = 0; for(col = 6; col <= NF; col++){if(match($col, /.*@.*/) && ch != col) {ch = col; mail = $col}} \
                 if(ch == 0) mail = " --- "; \
-                {cmd = "bash -c '\'' check_status "$1" '\'' "; cmd | getline usts; close(cmd);} \
-                {cmd = "bash -c '\'' last_login "$1" '\'' "; cmd |getline ldate; close(cmd);} \
+                {cmd = "bash -c '\''check_status "$1"'\''"; cmd | getline usts; close(cmd);} \
+                {cmd = "bash -c '\''last_login "$1"'\''"; cmd |getline ldate; close(cmd);} \
                 printf "|\033[31m%s\033[0m%-15s | %-19s | %.4d | %.4d | %-20s | %s \n", usts, $1, ldate, $3, $4, $5, mail}' | sort -t'|' -nk4
   else
   getent passwd | awk -F'[:,]' '$3 >= 1000 && $3 < 5000 \
                 {ch = 0; for(col = 6; col <= NF; col++){if(match($col, /.*@.*/) && ch != col) {ch = col; mail = $col}} \
                 if(ch == 0) mail = " --- "; \
-                {cmd = "bash -c '\'' last_login "$1"'\'' "; cmd |getline ldate; close(cmd);} \
+                {cmd = "bash -c '\''last_login "$1"'\''"; cmd |getline ldate; close(cmd);} \
                 printf "| %-15s | %-19s | %.4d | %.4d | %-20s | %s \n", $1, ldate, $3, $4, $5, mail}' | sort -t'|' -nk4
   fi
   echo "+-----------------+---------------------+------+------+----------------------+----- --- --- -- - "
