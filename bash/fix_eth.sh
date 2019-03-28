@@ -17,7 +17,7 @@
 ##
 ## [Service]
 ## Type=oneshot
-## ExecStart=/etc/fix-eth.sh
+## ExecStart=/etc/fix_eth.sh
 ##
 ## [Install]
 ## WantedBy=multi-user.target
