@@ -5,8 +5,8 @@
 # @Zvk : 2016
 #
 
-$user='root'
-$host='192.168.242.10'
+user='root'
+host='192.168.242.10'
 
 counter=0
 moref=()
@@ -14,10 +14,11 @@ names=()
 guest=()
 
 echo -n "> Retriving VM list... "
-output=$(ssh $user@$host 'vim-cmd vmsvc/getallvms')
+output=$(ssh -o ConnectTimeout=1 $user@$host 'vim-cmd vmsvc/getallvms' 2>/dev/null)
+[[ -z $output ]] && { echo -e "[failed]\n[error] - SSH connection failed"; exit; }
 grep_test=$(echo $output | grep -oP "^[a-zA-Z]+")
-if [ $grep_test == Vmid ]; then
-#   awk '{printf ("%s\t\t%s\t\t%s\n", $1, $2, $5)}' <(echo "$output")
+
+if [[ $grep_test == Vmid ]]; then
    echo "[done]";
    while read -r line; do
       if [ $(echo $line | grep -oP "^[0-9]+") ]; then
