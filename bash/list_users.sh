@@ -49,8 +49,13 @@ EOL
 
 last_login() {
   ldate=`lastlog -u $1 | tail -1`
-  [[ $ldate =~ "Never logged in" ]] && ldate="never" || \
+  if [[ $ldate =~ "Never logged in" ]]; then
+    ldate="never"
+  elif [[ $ldate =~ "tty" ]]; then
+      ldate=`echo $ldate | date -d "$(awk '{printf "%s %s %s %s", $5, $4, $8, $6 }')" "+%d.%m.%Y %H:%M:%S"`
+  else
       ldate=`echo $ldate | date -d "$(awk '{printf "%s %s %s %s", $6, $5, $9, $7 }')" "+%d.%m.%Y %H:%M:%S"`
+  fi
   echo $ldate
 }
 export -f last_login
@@ -98,7 +103,7 @@ if [[ -z "$silent" ]]; then
   getent passwd | awk -F'[:,]' '$3 >= 1000 && $3 < 5000 \
                 {ch = 0; for(col = 6; col <= NF; col++){if(match($col, /.*@.*/) && ch != col) {ch = col; mail = $col}} \
                 if(ch == 0) mail = " --- "; \
-                {cmd = "bash -c '\''last_login $1'\''"; cmd |getline ldate; close(cmd);} \
+                {cmd = "bash -c '\''last_login "$1"'\''"; cmd |getline ldate; close(cmd);} \
                 printf "| %-15s | %-19s | %.4d | %.4d | %-20s | %s \n", $1, ldate, $3, $4, $5, mail}' | sort -t'|' -nk4
   fi
   echo "+-----------------+---------------------+------+------+----------------------+----- --- --- -- - "
