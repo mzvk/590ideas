@@ -1,4 +1,8 @@
 #!/bin/bash --
+#
+# Script to imitate movies decryption-like visual effect.
+# @MZvk: 2019
+#
 
 wcnt=0
 skip=5
