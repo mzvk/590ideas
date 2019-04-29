@@ -28,6 +28,6 @@ while read line; do
       (( $wcnt > $skip )) && { wcnt=0; out+=${line::1}; line=${line:1}; } || ((wcnt++))
       [[ -z $line ]] && echo -en "$out\n" && break
       sleep 0.02
-      echo -en "$out\033[100m$(char $(($RANDOM % 93 + 33)))\033[0m\r"
+      echo -en "$out\033[47;30m$(char $(($RANDOM % 93 + 33)))\033[0m\r"
    done;
 done < $1
