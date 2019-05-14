@@ -31,7 +31,7 @@ match / {
        if(jcs:empty(jcs:regex("[xgf]e-[0-9]/(0/([0-9]|[1-3][0-9]|4[0-7])|1/[0-3])$", $intf))){
           terminate "Invalid interface";
        }
-       expr jcs:syslog(191, "OP_SCRIPT_TRIGGER[7] intf_flap.slax user:" _ $user _ " delay:" _ $delay _ " intf:" _ $intf);
+       expr jcs:syslog(191, "OP_SCRIPT_TRIGGER[7]: intf_flap.slax user:" _ $user _ " delay:" _ $delay _ " intf:" _ $intf);
     }
 }
 
