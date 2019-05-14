@@ -12,4 +12,15 @@ set event-options event-script file intf_flap.slax
 ```
 
 ## Usage
+```
+{master:0}
+mzvk@ex2300> show interfaces ge-0/0/0 | match flap    
+  Last flapped   : 2019-05-14 20:01:51 UTC (00:02:56 ago)
 
+{master:0}
+mzvk@ex2300> op bounce intf ge-0/0/0 delay 1                    
+
+{master:0}
+mzvk@ex2300> show interfaces ge-0/0/0 | match flap              
+  Last flapped   : 2019-05-14 20:05:08 UTC (00:00:10 ago)
+```
