@@ -8,10 +8,7 @@ This script consist of two entities:
 - intf_flap.slax - event script
 - syslog_trigger.slax - op script
 
-
-If script execution is triggered by the event, it would be run with the system privileges (root).
-This explains why there are actually two scripts. First one `intf_flap.slax` is event script, which already contains event policy definition inside it's body, hence no additional config is required. Event script is the one doing actual work on the interfaces, but to be executed it requires a specific event to be triggered in the system. 
-In the event body all argument are passed to the event script. As name implies, the second script `syslog_trigger.slax` is an op (operational) script used plainly for the generation of custom event. 
+First one `intf_flap.slax` is event script, which already contains event policy definition inside it's body, hence no additional config is required. It is doing most of the work on the interfaces, but to be executed it requires a specific event to be triggered in the system. In the event body all argument are passed to the event script. As name implies, the second script `syslog_trigger.slax` is an op (operational) script used plainly for the generation of custom event. 
 
 ## Junos config:
 
