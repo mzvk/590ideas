@@ -1,6 +1,7 @@
 ## DESCRIPTION
 
 Script should be triggered by the custom message, then it will automatically enter dumpen mode to suppress any additional execution of the script. First action of the script is to remove configured event policy, to further prevent future execution, since script should be run only once. 
+Logging is done via syslog messages with facility and severity string pair of `user.notice`, so to view them configuration should allow that.
 
 ## USAGE
 
