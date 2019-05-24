@@ -6,6 +6,7 @@ Script should be triggered by the custom message, then it will automatically ent
 
 1. Create an event policy
 
+```
 [edit event-options]
    policy {{event-policy-name}} {
        events SYSTEM;
@@ -22,11 +23,13 @@ Script should be triggered by the custom message, then it will automatically ent
        }
    }
 }
+```
 
 2. Wait for the trigger. 
 
 ## EXAMPLE
 
+```
 {master:0}[edit]
 mzurawski@qfx5100-02# show | compare 
 [edit event-options]
@@ -70,3 +73,4 @@ event-script {
 {master:0}
 mzurawski@qfx5100-02> file list /var/tmp/ | match snmpd
 core_snmpd_live.0
+```
