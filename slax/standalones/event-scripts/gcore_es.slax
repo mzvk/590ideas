@@ -1,0 +1,111 @@
+version 1.1;
+
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+ns func extension = "http://exslt.org/functions";
+ns ngwx extension = "http://xml.juniper.net/ngwx";
+
+import "../import/junos.xsl";
+
+/*
+
+  Version: 1.0
+  Author: MZvk | maciej.zurawski@ngworx.ag
+  Description: Event script which suppose to capture live core dump of process, based on the trigger event. 
+               Additionally to the self-clearing of event trigger, script is dumped internally to further prevent multiple script execution.
+
+  ...I will never be friends with SLAX... he just does not like me.
+
+*/
+
+var $arguments = {
+   <argument> {
+      <name> "policy_name";
+      <description> "Name of configured event-option policy which would be removed during script execution, to prevent multiple script runs.";
+   }
+   <argument> {
+      <name> "proc_list";
+      <description> "List of the processess from which live core dump should be made. Comma seperated, no whitespaces.";
+   }
+}
+
+param $policy_name = "CUSTOM_TRIGGER";
+param $proc_list = "";
+
+var $local = jcs:open();
+
+match / {
+   <event-script-results> {
+      if(jcs:dampen("cleanup", 1, 5)){
+         var $cleanup = <load-configuration action = "merge" format = "xml"> {
+            <configuration> {
+               <event-options> {
+                       <policy delete="delete"> {
+                               <name> $policy_name;
+                  }
+               }
+            }
+         }
+         var $rpc = jcs:execute($local, $cleanup);
+         var $com = jcs:execute($local, 'commit-configuration');
+         var $procs = jcs:split(",", $proc_list);
+         for-each($procs){
+            if(string-length(.) > 3){
+               var $proc = ngwx:get_procid("ps -x | grep '/[u]sr/sbin/.*" _ . _ "'", .);
+               if(jcs:empty($proc)) {
+                  expr jcs:syslog(13, "[$script] Cloud not find process matching: " _ .);
+               } else {
+                  for-each($proc/process){
+                     var $rr = call save_gcore($pid=./id, $name=./name);
+                  }
+               }
+            } else {
+               expr jcs:syslog(13, "[$script] Ignoring input " . ", string to short.");
+            }
+         }
+      } else {
+         expr jcs:syslog(13, "[$script] Running idle, dampening enabled.");
+      }
+   }
+   expr jcs:syslog(13, "[$scritp] Terminates without errors.");
+   expr jcs:close($local);
+}
+
+<func:function name="ngwx:get_procid"> {
+   param $cmd;
+   param $pname;
+   var $shcmd = {
+      <request-shell-execute> {
+         <command> $cmd;
+      }
+   }
+   var $result = jcs:execute($local, $shcmd);
+   var $output = jcs:break-lines($result);
+   var $pidlist := {
+     for-each($output){
+       if(. != ""){
+         var $array = jcs:regex(" *([0-9]+) +.* /usr/sbin/([a-z.-]+) *", .);
+         <process> {
+           <name> $array[3];
+           <id> $array[2];
+         }
+       }
+     }
+   }
+   <func:result select="$pidlist">;
+}
+
+template save_gcore($pid=0, $name=""){
+   var $shcmd = {
+     <request-shell-execute> {
+        <command> "gcore -s -c /var/tmp/core_" _ $name _ "_live.0 " _ $pid;
+     }
+  }
+  var $result = jcs:execute($local, $shcmd);
+  if($result){
+     expr jcs:syslog(13, "[$scritp] Failed to write core dump of " _ $pid _ " to file core_" _ $name _ "_live.0");
+  } else {
+     expr jcs:syslog(13, "[$scritp] Wrote core dump of " _ $pid _ " to file core_" _ $name _ "_live.0");
+  }
+}
