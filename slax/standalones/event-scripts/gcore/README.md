@@ -5,7 +5,10 @@ Logging is done via syslog messages with facility and severity string pair of `u
 
 ## USAGE
 
-1. Create an event policy
+1. Copy script to the /var/db/script/event and configure it under [event-options event-script].
+`set event-options event-script file gcore_es.slax`
+
+2. Create an event policy.
 
 ```
 [edit event-options]
@@ -26,7 +29,7 @@ Logging is done via syslog messages with facility and severity string pair of `u
 }
 ```
 
-2. Wait for the trigger. 
+3. Wait for the trigger. 
 
 ## EXAMPLE
 
