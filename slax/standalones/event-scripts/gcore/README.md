@@ -1,7 +1,7 @@
 ## DESCRIPTION
 
-Script should be triggered by the custom message, then it will automatically enter dumpen mode to suppress any additional execution of the script. First action of the script is to remove configured event policy, to further prevent future execution, since script should be run only once. 
-Logging is done via syslog messages with facility and severity string pair of `user.notice`, so to view them configuration should allow that.
+Script should be triggered by the custom message, which does not have any event specified by Junos, so it has assigned general event id ("SYSTEM"). There are two mechanisms embedded to prevent from multiple execution, one is self-clearing procedure, which will remove configured event policy which enables script execution. Second is script dampening, which will prevent execute for 5min, since last run. Multiple processes can be specified in the comma seperated list. Processess from list are then matched against list of all running processess on the switch/router and all matching hits are then dumped. Given process name is base of regex pattern. Process name must be at least 4 characters long, to prevent greedy regex search and dumping all running processess. 
+Logging is done via SYSLOG messages, which use `user.notice` facility and severity string pair (priority of 13 => 1 * 8 + 5), to view this messages, appropriate severity level needs to be saved to files or send to external SYSLOG server.
 
 ## USAGE
 
@@ -30,7 +30,9 @@ Logging is done via syslog messages with facility and severity string pair of `u
 }
 ```
 
-3. Wait for the trigger. 
+3. Commit 
+
+4. Wait for the trigger. 
 
 ## EXAMPLE
 
