@@ -54,6 +54,11 @@ mzurawski@qfx5100-02# show | compare
 +           }
 +       }
 +   }
++   event-script {
++       file gcore.slax {
++           source "scp://mzurawski@10.255.0.4:/home/mzurawski/SLAX/gcore_es.slax";
++       }
++   }
 
 {master:0}[edit]
 mzurawski@qfx5100-02# commit and-quit
@@ -73,7 +78,7 @@ exit
 mzurawski@qfx5100-02> show configuration event-options 
 event-script {
     file gcore.slax {
-        source "scp://mzurawski@10.255.0.4:/home/mzurawski/SLAX/gcore.slax";
+        source "scp://mzurawski@10.255.0.4:/home/mzurawski/SLAX/gcore_es.slax";
     }
 }
 
