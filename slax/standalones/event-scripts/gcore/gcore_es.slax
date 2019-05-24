@@ -37,44 +37,44 @@ var $local = jcs:open();
 
 match / {
    <event-script-results> {
+      expr jcs:syslog(13, "[" _ $script _ "] Starting!"); 
       if(jcs:dampen("cleanup", 1, 5)){
          var $cleanup = <load-configuration action = "merge" format = "xml"> {
             <configuration> {
                <event-options> {
-                       <policy delete="delete"> {
-                               <name> $policy_name;
+                     <policy delete="delete"> {
+                        <name> $policy_name;
                   }
                }
             }
          }
          var $rpc = jcs:execute($local, $cleanup);
-         var $com = jcs:execute($local, 'commit-configuration');
+         var $com = jcs:execute($local, 'commit-configuration');  
          var $procs = jcs:split(",", $proc_list);
          for-each($procs){
             if(string-length(.) > 3){
-               var $proc = ngwx:get_procid("ps -x | grep '/[u]sr/sbin/.*" _ . _ "'", .);
+               var $proc = ngwx:get_procid("ps -x | grep '/[u]sr/sbin/.*" _ . _ "'");
                if(jcs:empty($proc)) {
-                  expr jcs:syslog(13, "[$script] Cloud not find process matching: " _ .);
+                  expr jcs:syslog(13, "[" _ $script _ "] Could not find process matching: " _ .);
                } else {
                   for-each($proc/process){
                      var $rr = call save_gcore($pid=./id, $name=./name);
                   }
                }
             } else {
-               expr jcs:syslog(13, "[$script] Ignoring input " . ", string to short.");
+               expr jcs:syslog(13, "[" _ $script _ "] Ignoring input " _ . _ ", string to short.");
             }
          }
       } else {
-         expr jcs:syslog(13, "[$script] Running idle, dampening enabled.");
+         expr jcs:syslog(13, "[" _ $script _ "] Running idle, dampening enabled.");
       }
    }
-   expr jcs:syslog(13, "[$scritp] Terminates without errors.");
+   expr jcs:syslog(13, "[" _ $scritp _ "] Terminates without errors.");
    expr jcs:close($local);
 }
 
 <func:function name="ngwx:get_procid"> {
    param $cmd;
-   param $pname;
    var $shcmd = {
       <request-shell-execute> {
          <command> $cmd;
@@ -104,8 +104,8 @@ template save_gcore($pid=0, $name=""){
   }
   var $result = jcs:execute($local, $shcmd);
   if($result){
-     expr jcs:syslog(13, "[$scritp] Failed to write core dump of " _ $pid _ " to file core_" _ $name _ "_live.0");
+     expr jcs:syslog(13, "[" _ $script _ "] Failed to write core dump of " _ $pid _ " to file core_" _ $name _ "_live.0");
   } else {
-     expr jcs:syslog(13, "[$scritp] Wrote core dump of " _ $pid _ " to file core_" _ $name _ "_live.0");
+     expr jcs:syslog(13, "[" _ $script _ "] Wrote core dump of " _ $pid _ " to file core_" _ $name _ "_live.0");
   }
 }
