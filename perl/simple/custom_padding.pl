@@ -8,7 +8,7 @@ use warnings;
 
 sub custpadd {
   my ($tx, $pc, $pl) = @_;
-  return $tx . $pc x ( $pl - length($tx) > 0 ? $pl - length($tx) : 0);
+  return $tx . $pc x ($pl - length($tx) > 0 ? $pl - length($tx) : 0);
 }
 
 die "Invalid input.\nUsage $0 <text> <padding character> <total length of string, txt + padding>\n" if $#ARGV < 2;
