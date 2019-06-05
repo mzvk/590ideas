@@ -1,4 +1,4 @@
-OLD VERSION OF FUNCTIONS, documented for so I can reuse ideas if they will be such necessity.
+OLD VERSION OF FUNCTIONS, documented so I can reuse ideas if they will be such necessity.
 
 ## str2int 
 #### before pack/unpack
