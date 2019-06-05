@@ -133,7 +133,7 @@ if($argCSV){close $cfh;}
 
 sub getFeed {
   my @ip;
-  open(FILE, shift) || die "[ERROR] Could not open feed file: $!\n";
+  open(FILE, '<', shift) || die "[ERROR] Could not open feed file: $!\n";
   while(<FILE>){
     next if m/^(\s*|#.*)$/;
     chomp && push @ip, $_;
@@ -143,7 +143,7 @@ sub getFeed {
 }
 
 sub getYAML {
-  open(my $yfh, shift) || die "[ERROR] Couldn't open sysObjectID mapping: $!\n";
+  open(my $yfh, '<', shift) || die "[ERROR] Couldn't open sysObjectID mapping: $!\n";
   return LoadFile($yfh);
 }
 
@@ -158,8 +158,8 @@ sub getOSVersion {
 
 sub getConfig {
   my @lines;
-  open(FILE, $_[0]) || do {say "[ERROR] Cannot config open file!: $!"; return @lines;};
-   while(<FILE>){
+  open(FILE, '<', $_[0]) || do {say "[ERROR] Cannot config open file!: $!"; return @lines;};
+  while(<FILE>){
      next if m/^\s+$/;
      chomp && push @lines, $_;
   }

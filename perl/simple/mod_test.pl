@@ -41,7 +41,7 @@ say "";
 exit(0);
 
 sub try_module {
-   eval("use $_");
+   eval "use $_";
    if($@) {
       if($verbose) {say "cannot load module, detailed error:\n".$@; 
       } else {
