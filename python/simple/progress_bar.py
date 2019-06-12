@@ -1,6 +1,7 @@
 import sys, os
+import time
 
-configDir = '/path/to/some/files'
+configDir = '.'  ##/path/to/some/files
 
 def wasteTime(filename):
   try:
@@ -15,7 +16,7 @@ def progressBar(current, max, title = 'Progress'):
     percent = "{:>6.2f}%".format(100 * current/float(max))
     ending = "\n" if current == max else ""
     fill = int(50 * current // max)
-    sys.stdout.write('\r{} |{}| {} Completed {}'.format(title, "{}{}".format("#" * fill, '_' * (50 - fill)),  percent, ending))    
+    sys.stdout.write('\r{} |{}| {} Completed {}'.format(title, "{}{}".format("#" * fill, '_' * (50 - fill)),  percent, ending))
     sys.stdout.flush()
 
 def main():
@@ -28,6 +29,7 @@ def main():
     sys.exit()
   for idx, cfgfile in enumerate(files):
     progressBar(idx + 1, len(files), title = 'Checking in progress:')
+    time.sleep(1) ## for presentation only
     target = wasteTime('/'.join([configDir, cfgfile]))
     if not (len(target) > 0):
       continue
