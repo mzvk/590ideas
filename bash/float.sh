@@ -12,7 +12,7 @@ usage() {
 [[ $1 =~ ^([1-9]|10)$ ]] && prec=$1
 
 for _ in $(seq $prec); do
-  f=$f$((RANDOM % 10));
+  f=$f$((RANDOM % 10))
 done
 
 echo 0.$f
