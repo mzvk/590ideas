@@ -10,9 +10,9 @@ MAX_VAL=100
 
 showBar() {
     elapsed=$(($1*$2/100))
-    printf -v prog  "%${elapsed}s"
-    printf -v total "%$(($2-elapsed))s"
-    printf '%s %3s%% \r' "<${prog// /\/}${total}>" "$(($1*100/$3))"
+    printf -v prog "%${elapsed}s"
+    printf -v rest "%$(($2-elapsed))s"
+    printf '%s %3s%% \r' "<${prog// /\/}${rest}>" "$(($1*100/$3))"
 }
 
 sleep() {
