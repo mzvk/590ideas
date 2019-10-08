@@ -9,7 +9,7 @@ usage() {
 }
 
 [[ $# -eq 0 ]] && usage
-[[ $1 =~ ^([1-9]|10)$ ]] && prec=$1
+[[ $1 =~ ^([1-9]|10)$ ]] && prec=$1 || usage
 
 for _ in $(seq $prec); do
   f=$f$((RANDOM % 10))
