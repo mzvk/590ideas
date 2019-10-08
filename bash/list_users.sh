@@ -1,6 +1,8 @@
 #!/bin/bash
 #
 # Prints configured users (uid above 1000), input is taken from passwd database
+# If AWK cannot find commands, then they should be exported manually to the location of $PATH
+# I know it does not work on Ubuntu 16+, but work on Debian, probably some security constrains
 # @MZvk : 2017 [A54477]
 #
 
@@ -113,6 +115,3 @@ if [[ -z "$silent" ]]; then
     echo -e " \e[31m#\e[0m - expired & banned"
   fi
 fi
-
-#ideas
-# -a/d - add/del account
