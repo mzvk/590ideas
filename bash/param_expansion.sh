@@ -1,6 +1,6 @@
 #!/bin/bash --
 #
-# Quick tail&test to show parameter expansion
+# Quick test to show parameter expansion
 # @Zvk : 2019
 #
 
