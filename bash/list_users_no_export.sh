@@ -93,14 +93,14 @@ if [[ -z "$silent" ]]; then
   echo -e "|       \e[33muser\e[0m      |     \e[33mlast login\e[0m      | \e[33muid\e[0m  | \e[33mgid\e[0m  | \e[33mfull name\e[0m            | \e[33memail\e[0m "
   echo    "+-----------------+---------------------+------+------+----------------------+------------- --- -- -"
   if [ "$EUID" -eq 0 ]; then
-    getent passwd | awk -F'[:,]' '$3 >= 1000 && $3 < 5000 {print $1" "$3" "$4" "$5" "$9}' | while read line; do
+    getent passwd | awk -F'[:]' '$3 >= 1000 && $3 < 5000 { gsub(/ /, "#", $5); split($5, x, ","); print $1" "$3" "$4" "x[1]" "x[5] }' | while read line; do
       user=($line)
-      printf "|\033[31m%s\033[0m%-15s | %-19s | %.4d | %.4d | %-20s | %s \n" "$(check_status ${user[0]})" ${user[0]} "$(last_login ${user[0]})" ${user[1]} ${user[2]} ${user[3]} ${user[4]}
+      printf "|\033[31m%s\033[0m%-15s | %-19s | %.4d | %.4d | %-20s | %s \n" "$(check_status ${user[0]})" ${user[0]} "$(last_login ${user[0]})" ${user[1]} ${user[2]} "${user[3]//#/ }" ${user[4]}
     done
   else
-    getent passwd | awk -F'[:,]' '$3 >= 1000 && $3 < 5000 {print $1" "$3" "$4" "$5" "$9}' | while read line; do
+    getent passwd | awk -F'[:]' '$3 >= 1000 && $3 < 5000 { gsub(/ /, "#", $5); split($5, x, ","); print $1" "$3" "$4" "x[1]" "x[5] }' | while read line; do
       user=($line)
-      printf "| %-15s | %-19s | %.4d | %.4d | %-20s | %s \n" ${user[0]} "$(last_login ${user[0]})" ${user[1]} ${user[2]} ${user[3]} ${user[4]}
+      printf "| %-15s | %-19s | %.4d | %.4d | %-20s | %s \n" ${user[0]} "$(last_login ${user[0]})" ${user[1]} ${user[2]} "${user[3]//#/ }" ${user[4]}
     done
   fi
   echo "+-----------------+---------------------+------+------+----------------------+----- --- --- -- - "
