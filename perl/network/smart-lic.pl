@@ -39,10 +39,10 @@ my %enums = (
 );
 
 my %tempMap = (
-   '0.1' => {var => 'slaiid', type => 's', space => 'sla'},                #ciscoSlaInstanceId
-   '0.2' => {var => 'sudi', type => 's', space => 'dev'},                  #ciscoSlaSUDIInfo
-   '0.3' => {var => 'slaver', type => 's', space => 'sla'},                #ciscoSlaVersion
-   '0.4' => {var => 'slaena', type => 'b', space => 'sla'},                #ciscoSlaEnabled
+   '0.1'       => {var => 'slaiid', type => 's', space => 'sla'},          #ciscoSlaInstanceId
+   '0.2'       => {var => 'sudi',   type => 's', space => 'dev'},          #ciscoSlaSUDIInfo
+   '0.3'       => {var => 'slaver', type => 's', space => 'sla'},          #ciscoSlaVersion
+   '0.4'       => {var => 'slaena', type => 'b', space => 'sla'},          #ciscoSlaEnabled
    '0.5.1.1.1' => {var => 'entidx', type => 's', space => 'ent'},          #ciscoSlaEntitlementInfoIndex   
    '0.5.1.1.2' => {var => 'entrqc', type => 's', space => 'ent'},          #ciscoSlaEntitlementRequestCount
    '0.5.1.1.3' => {var => 'enttag', type => 's', space => 'ent'},          #ciscoSlaEntitlementTag
@@ -50,31 +50,30 @@ my %tempMap = (
    '0.5.1.1.5' => {var => 'entenf', type => 'e', space => 'ent'},          #ciscoSlaEntitlementEnforceMode
    '0.5.1.1.6' => {var => 'entdsc', type => 's', space => 'ent'},          #ciscoSlaEntitlementDescription
    '0.5.1.1.7' => {var => 'entfnm', type => 's', space => 'ent'},          #ciscoSlaEntitlementFeatureName
-   '0.6.1' => {var => 'regstt', type => 'e', space => 'reg'},              #ciscoSlaRegistrationStatus
-   '0.6.2' => {var => 'regvac', type => 's', space => 'reg'},              #ciscoSlaVirtualAccount
-   '0.6.3' => {var => 'regcex', type => 't', space => 'reg'},              #ciscoSlaNextCertificateExpireTime
-   '0.6.4' => {var => 'regeac', type => 's', space => 'reg'},              #ciscoSlaEnterpirseAccountName
-   '0.6.5.1' => {var => 'regini', type => 't', space => 'reg'},            #ciscoSlaRegisterInitTime
-   '0.6.5.2' => {var => 'regsuc', type => 'b', space => 'reg'},            #ciscoSlaRegisterSuccess
-   '0.6.5.3' => {var => 'regfai', type => 's', space => 'reg'},            #ciscoSlaRegisterFailureReason
-   '0.6.5.4' => {var => 'regnex', type => 't', space => 'reg'},            #ciscoSlaRegisterNextRetryTime
-   '0.6.6.1' => {var => 'regrin', type => 't', space => 'reg'},            #ciscoSlaRenewInitTime
-   '0.6.6.2' => {var => 'regrsu', type => 'b', space => 'reg'},            #ciscoSlaRenewSuccess
-   '0.6.6.3' => {var => 'regrfa', type => 's', space => 'reg'},            #ciscoSlaRenewFailureReason
-   '0.6.6.4' => {var => 'regrnr', type => 't', space => 'reg'},            #ciscoSlaRenewNextRetryTime
-   '0.7.1' => {var => 'autexp', type => 't', space => 'aut'},              #ciscoSlaAuthExpireTime
-   '0.7.2' => {var => 'autcst', type => 's', space => 'aut'},              #ciscoSlaAuthComplianceStatus
-   '0.7.3' => {var => 'autooc', type => 't', space => 'aut'},              #ciscoSlaAuthOOCStartTime
-   '0.7.4.1' => {var => 'auteiu', type => 'b', space => 'aut'},            #ciscoSlaAuthEvalPeroidInUse
-   '0.7.4.2' => {var => 'auteex', type => 't', space => 'aut'},            #ciscoSlaAuthEvalExpiredTime
-   '0.7.4.3' => {var => 'autelf', type => 'c', space => 'aut'},            #ciscoSlaAuthEvalPeriodLeft
-   '0.7.5.1' => {var => 'autrin', type => 't', space => 'aut'},            #ciscoSlaAuthRenewInitTime
-   '0.7.5.2' => {var => 'autrsc', type => 'b', space => 'aut'},            #ciscoSlaAuthRenewSuccess
-   '0.7.5.3' => {var => 'autrfl', type => 's', space => 'aut'},            #ciscoSlaAuthRenewFailureReason
-   '0.7.5.4' => {var => 'autrnx', type => 't', space => 'aut'},            #ciscoSlaAuthRenewNextRetryTime
-   '0.8.1' => {var => 'ntfglb', type => 'b', space => 'ntf'},              #ciscoSlaGlobalNotifEnable 
-   '0.8.2' => {var => 'ntfent', type => 'b', space => 'ntf'},              #ciscoSlaEntitlementNotifEnable
-   
+   '0.6.1'     => {var => 'regstt', type => 'e', space => 'reg'},          #ciscoSlaRegistrationStatus
+   '0.6.2'     => {var => 'regvac', type => 's', space => 'reg'},          #ciscoSlaVirtualAccount
+   '0.6.3'     => {var => 'regcex', type => 't', space => 'reg'},          #ciscoSlaNextCertificateExpireTime
+   '0.6.4'     => {var => 'regeac', type => 's', space => 'reg'},          #ciscoSlaEnterpirseAccountName
+   '0.6.5.1'   => {var => 'regini', type => 't', space => 'reg'},          #ciscoSlaRegisterInitTime
+   '0.6.5.2'   => {var => 'regsuc', type => 'b', space => 'reg'},          #ciscoSlaRegisterSuccess
+   '0.6.5.3'   => {var => 'regfai', type => 's', space => 'reg'},          #ciscoSlaRegisterFailureReason
+   '0.6.5.4'   => {var => 'regnex', type => 't', space => 'reg'},          #ciscoSlaRegisterNextRetryTime
+   '0.6.6.1'   => {var => 'regrin', type => 't', space => 'reg'},          #ciscoSlaRenewInitTime
+   '0.6.6.2'   => {var => 'regrsu', type => 'b', space => 'reg'},          #ciscoSlaRenewSuccess
+   '0.6.6.3'   => {var => 'regrfa', type => 's', space => 'reg'},          #ciscoSlaRenewFailureReason
+   '0.6.6.4'   => {var => 'regrnr', type => 't', space => 'reg'},          #ciscoSlaRenewNextRetryTime
+   '0.7.1'     => {var => 'autexp', type => 't', space => 'aut'},          #ciscoSlaAuthExpireTime
+   '0.7.2'     => {var => 'autcst', type => 's', space => 'aut'},          #ciscoSlaAuthComplianceStatus
+   '0.7.3'     => {var => 'autooc', type => 't', space => 'aut'},          #ciscoSlaAuthOOCStartTime
+   '0.7.4.1'   => {var => 'auteiu', type => 'b', space => 'aut'},          #ciscoSlaAuthEvalPeroidInUse
+   '0.7.4.2'   => {var => 'auteex', type => 't', space => 'aut'},          #ciscoSlaAuthEvalExpiredTime
+   '0.7.4.3'   => {var => 'autelf', type => 'c', space => 'aut'},          #ciscoSlaAuthEvalPeriodLeft
+   '0.7.5.1'   => {var => 'autrin', type => 't', space => 'aut'},          #ciscoSlaAuthRenewInitTime
+   '0.7.5.2'   => {var => 'autrsc', type => 'b', space => 'aut'},          #ciscoSlaAuthRenewSuccess
+   '0.7.5.3'   => {var => 'autrfl', type => 's', space => 'aut'},          #ciscoSlaAuthRenewFailureReason
+   '0.7.5.4'   => {var => 'autrnx', type => 't', space => 'aut'},          #ciscoSlaAuthRenewNextRetryTime
+   '0.8.1'     => {var => 'ntfglb', type => 'b', space => 'ntf'},          #ciscoSlaGlobalNotifEnable 
+   '0.8.2'     => {var => 'ntfent', type => 'b', space => 'ntf'},          #ciscoSlaEntitlementNotifEnable
 );
 my %OIDs = ("SL-MIB" => '1.3.6.1.4.1.9.9.831');
 my $tw = `tput cols`;
