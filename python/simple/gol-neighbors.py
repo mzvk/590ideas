@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-# Simple script to visualize my terminal-based simulator of the Conway's GoL.
+# Simple script to visualize part of my terminal-based simulator of the Conway's GoL.
 # It iterates over living cells, checking all its neighbors.
-# Extensive use of ANSI escape codes.
+# Extensive use of ANSI escape codes. That was a developement version ;).
 # MZvk 2019
 
 import sys, time
