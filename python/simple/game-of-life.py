@@ -60,47 +60,51 @@ def countN(cell, flock):
 
 if __name__ == '__main__':
    argparse(sys.argv[1:])
-   eprint("\033[2J\033[H\033[?25l")
-   print "*** THIS IS THE GAME OF LIFE ***\n"
-   print "{}{}{}".format(' +-', '-' * (_GRIDX * 2 - 1), '-+ ')
-   for x in xrange(_GRIDX):
-      print '{}{}{}'.format(' | ', ' '.join(['.'] * _GRIDY), ' | ')
-   print "{}{}{}".format(' +-', '-' * (_GRIDX * 2 - 1), '-+ ')
+   try:
+      eprint("\033[2J\033[H\033[?25l")
+      print "*** THIS IS THE GAME OF LIFE ***\n"
+      print "{}{}{}".format(' +-', '-' * (_GRIDX * 2 - 1), '-+ ')
+      for x in xrange(_GRIDX):
+         print '{}{}{}'.format(' | ', ' '.join(['.'] * _GRIDY), ' | ')
+      print "{}{}{}".format(' +-', '-' * (_GRIDX * 2 - 1), '-+ ')
 
-   flock = {k:[1, 0] for k in (init_flock + immortal)}
-   deadmans = []
-   epoch = 1
-   phash = [0]
-
-   while(1):
-      new_flock = {}
-      newborns = {}
-      eprint("\033[2;1HEpoch: {}".format(epoch))
-
-      for cell in deadmans:
-         eprint("\033[{};{}H.".format((cell/_GRIDX)+4, (cell%_GRIDY)*2+4))
+      flock = {k:[1, 0] for k in (init_flock + immortal)}
       deadmans = []
+      epoch = 1
+      phash = [0]
 
-      for cell in flock:
-         if cell >= _GRIDX * _GRIDY: continue
-         eprint("\033[{};{}H\033[33m*\033[0m".format((cell/_GRIDX)+4, (cell%_GRIDY)*2+4))
-         flock[cell][1] = countN(cell, flock)
-         if (flock[cell][1] >= 2 and flock[cell][1] <= 3) or cell in immortal: new_flock[cell] = [1,0]
-         else: deadmans.append(cell)
+      while(1):
+         new_flock = {}
+         newborns = {}
+         eprint("\033[2;1HEpoch: {}".format(epoch))
 
-      for cell in newborns:
-         if newborns[cell] == 3:
-            new_flock[cell] = [1,0]
-      flock = copy.deepcopy(new_flock)
-      epoch += 1
-      time.sleep(0.2)
+         for cell in deadmans:
+            eprint("\033[{};{}H.".format((cell/_GRIDX)+4, (cell%_GRIDY)*2+4))
+         deadmans = []
 
-      if(hash(tuple(sorted(flock.keys()))) in phash): break
-      else:
-         if not len(phash) < 5: phash.pop(0)
-         phash.append(hash(tuple(sorted(flock.keys()))))
+         for cell in flock:
+            if cell >= _GRIDX * _GRIDY: continue
+            eprint("\033[{};{}H\033[33m*\033[0m".format((cell/_GRIDX)+4, (cell%_GRIDY)*2+4))
+            flock[cell][1] = countN(cell, flock)
+            if (flock[cell][1] >= 2 and flock[cell][1] <= 3) or cell in immortal: new_flock[cell] = [1,0]
+            else: deadmans.append(cell)
 
-   eprint("\033[{};0H".format(_GRIDY + 6))
-   print "> Simulation terminated due no pattern change in the five consecutive epochs."
-   print "> {} of cells will live forever".format(len(flock))
-   print "\033[?25h"
+         for cell in newborns:
+            if newborns[cell] == 3:
+               new_flock[cell] = [1,0]
+         flock = copy.deepcopy(new_flock)
+         epoch += 1
+         time.sleep(0.2)
+
+         if(hash(tuple(sorted(flock.keys()))) in phash): break
+         else:
+            if not len(phash) < 5: phash.pop(0)
+            phash.append(hash(tuple(sorted(flock.keys()))))
+
+      eprint("\033[{};0H".format(_GRIDY + 6))
+      print "> Simulation terminated due no pattern change in the five consecutive epochs."
+      print "> {} of cells will live forever".format(len(flock))
+   except KeyboardInterrupt:
+      print "\033[2J\033[H"
+   finally:
+      print "\033[?25h"
