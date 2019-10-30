@@ -5,9 +5,6 @@
 # It just wraps first bit to the end of number
 # MZvk 2019
 
-
-# solution to Josephus permutation
-
 import sys, re
 
 if not len(sys.argv[1:]) == 1: sys.exit()
