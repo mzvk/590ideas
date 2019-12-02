@@ -1,8 +1,5 @@
 #!/usr/bin/env perl
 
-## quick and ugly script to parse debug output of CFM session monitor
-## Mzvk 2019
-
 use v5.10;
 use strict;
 use warnings;
@@ -15,8 +12,11 @@ my @mamj;
 my $count = 0;
 my %errors;
 my $errorstamp;
+
+die "USAGE: $0 <debug_file>\nOnly one file is read, others are ignored.\n" if $#ARGV < 0;
 readfile($ARGV[0]);
 print "\033[15;0H";
+
 say "Detected Errors:";
 for my $err (keys %errors){
    say $err;
@@ -89,16 +89,16 @@ sub timestamp {
    
    printf("\033[H Timestamp: %s\n", $date);
    printf("                 Tc id: %2d           Tp id: %2d\n", $1, $2);
-   printf(" TxTimeStampf: %9d:%9d %9d:%9d\n", $data->[0]->[0], $data->[0]->[1], $data->[4]->[0], $data->[4]->[1]);
-   printf(" RxTimeStampf: %9d:%9d %9d:%9d\n", $data->[2]->[0], $data->[2]->[1], $data->[6]->[0], $data->[6]->[1]);
-   printf(" TxTimeStampb: %9d:%9d %9d:%9d\n", $data->[1]->[0], $data->[1]->[1], $data->[5]->[0], $data->[5]->[1]);
-   printf(" TxTimeStampb: %9d:%9d %9d:%9d\n", $data->[3]->[0], $data->[3]->[1], $data->[7]->[0], $data->[7]->[1]);
-   printf(" Delay:        %9d:%9d %9d:%9d\n", $cframe->[0], $cframe->[1], $pframe->[1], $pframe->[1]);
-   printf(" Jitter:       %9d:%9d\n", $jitter->[0], $jitter->[1]);
+   printf(" TxTimeStampf: %12d:%12d %12d:%12d\n", $data->[0]->[0], $data->[0]->[1], $data->[4]->[0], $data->[4]->[1]);
+   printf(" RxTimeStampf: %12d:%12d %12d:%12d\n", $data->[2]->[0], $data->[2]->[1], $data->[6]->[0], $data->[6]->[1]);
+   printf(" TxTimeStampb: %12d:%12d %12d:%12d\n", $data->[1]->[0], $data->[1]->[1], $data->[5]->[0], $data->[5]->[1]);
+   printf(" TxTimeStampb: %12d:%12d %12d:%12d\n", $data->[3]->[0], $data->[3]->[1], $data->[7]->[0], $data->[7]->[1]);
+   printf(" Delay:        %12d:%12d %12d:%12d\n", $cframe->[0], $cframe->[1], $pframe->[1], $pframe->[1]);
+   printf(" Jitter:       %12d:%12d\n", $jitter->[0], $jitter->[1]);
    printf("\n Delay  Min/Avg/Max: %9d:%9d / %9d:%9d / %9d:%9d\n", $mamd[0]->[0], $mamd[0]->[1], $mamd[1]->[0], $mamd[1]->[1], $mamd[2]->[0], $mamd[2]->[1]);
    printf(" Jitter Min/Avg/Max: %9d:%9d / %9d:%9d / %9d:%9d\n", $mamj[0]->[0], $mamj[0]->[1], $mamj[1]->[0], $mamj[1]->[1], $mamj[2]->[0], $mamj[2]->[1]);
 
-   select(undef, undef, undef, 0.25);
+   select(undef, undef, undef, 0.1);
 }
 
 sub tjitter {
@@ -156,7 +156,6 @@ sub compare {
    my $type = shift;
 
    $value1 = $value2 if ! defined $value1;
-
    if($type eq 'max') {
       if($value2->[0] > $value1->[0]) { return $value2; }
       if($value2->[0] == $value1->[0] && $value2->[1] > $value1->[1]) { return $value2; }
@@ -166,7 +165,8 @@ sub compare {
       if($value2->[0] == $value1->[0] && $value2->[1] < $value1->[1]) { return $value2; }
    }
    elsif($type eq 'avg') {
-      my $tmp = int(($value2->[0] * 1000000000 + $value2->[1]) + $count * ($value1->[0] * 1000000000 + $value1->[1]))/($count+1);
+#      my $tmp = int((($value2->[0] * 1000000000) + $value2->[1]) + $count * (($value1->[0] * 1000000000) + $value1->[1]))/($count+1);
+      my $tmp = int($value1->[0] * 1000000000 + $value1->[1]) + (($value2->[0] * 1000000000 + $value2->[1]) - ($value1->[0] * 1000000000 + $value1->[1]))/($count+1);
       $value1->[0] = int($tmp / 1000000000);
       $value1->[1] = $tmp % 1000000000;
    }
