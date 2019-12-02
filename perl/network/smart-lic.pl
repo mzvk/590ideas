@@ -74,6 +74,9 @@ my %tempMap = (
    '0.7.5.4'   => {var => 'autrnx', type => 't', space => 'aut'},          #ciscoSlaAuthRenewNextRetryTime
    '0.8.1'     => {var => 'ntfglb', type => 'b', space => 'ntf'},          #ciscoSlaGlobalNotifEnable 
    '0.8.2'     => {var => 'ntfent', type => 'b', space => 'ntf'},          #ciscoSlaEntitlementNotifEnable
+   '0.9.1'     => {var => 'flmrea', type => 's', space => 'fms'},          #ciscoSlaFailureReason
+   '0.9.2'     => {var => 'flmder', type => 's', space => 'fms'},          #ciscoSlaDeRegisterFailureMsg
+   '0.10.1'    => {var => 'flmtpu', type => 's', space => 'fms'},          #ciscoSlaThirdPartyAndUtilityFailureMsg
 );
 my %OIDs = ("SL-MIB" => '1.3.6.1.4.1.9.9.831');
 my $tw = `tput cols`;
@@ -181,6 +184,14 @@ if(exists $sla{aut}){
    say "Authorization Eval In Use:       ".$sla{aut}{auteiu};
    say "Authorization Eval Expire:       ".$sla{aut}{auteex};
    say "Authorization Eval Left:         ".$sla{aut}{autelf};
+}
+if(exists $sla{fms}){
+   say "\033[36m+"."-"x($tw-2)."+\033[0m";
+   say ptitle('Smart License Failure Messages', $tw);
+   say "\033[36m+"."-"x($tw-2)."+\033[0m";
+   say "CSSM Failure Reason:             ".$sla{fms}{flmrea};
+   say "CSSM Deregister Failure Reason:  ".$sla{fms}{flmder};
+   say "CSSM 3rd Party Failure Message:  ".$sla{fms}{flmtpu};
 }
 say "\033[36m+"."-"x($tw-2)."+\033[0m";
 say ptitle('Smart License Notifications', $tw);
