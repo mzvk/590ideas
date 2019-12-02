@@ -1,5 +1,8 @@
 #!/usr/bin/env perl
 
+## quick and ugly script to parse debug output of CFM session monitor
+## Mzvk 2019
+
 use v5.10;
 use strict;
 use warnings;
