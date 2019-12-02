@@ -168,7 +168,6 @@ sub compare {
       if($value2->[0] == $value1->[0] && $value2->[1] < $value1->[1]) { return $value2; }
    }
    elsif($type eq 'avg') {
-#      my $tmp = int((($value2->[0] * 1000000000) + $value2->[1]) + $count * (($value1->[0] * 1000000000) + $value1->[1]))/($count+1);
       my $tmp = int($value1->[0] * 1000000000 + $value1->[1]) + (($value2->[0] * 1000000000 + $value2->[1]) - ($value1->[0] * 1000000000 + $value1->[1]))/($count+1);
       $value1->[0] = int($tmp / 1000000000);
       $value1->[1] = $tmp % 1000000000;
