@@ -173,7 +173,7 @@ if(exists $sla{aut}){
    say "Authorization Expire:            ".$sla{aut}{autexp};
    say "Authorization Compliance Status: ".$sla{aut}{autcst};
    say "Authorization OOC Init:          ".$sla{aut}{autooc};
-   if($sla{aut}{autcst} ne 'EVAL MODE'){
+   if($sla{aut}{autcst} ne 'EVAL MODE' && $sla{reg}{regstt} ne 'NOT-REGISTERED'){
       say ptitle('RENEWAL', $tw, 1);             
       say "Authorization Renewal Init:      ".$sla{aut}{autrin};
       say "Authorization Renewal Success:   ".$sla{aut}{autrsc};
@@ -187,9 +187,9 @@ if(exists $sla{aut}){
 }
 if(exists $sla{fms}){
    say "\033[36m+"."-"x($tw-2)."+\033[0m";
-   say ptitle('Smart License Failure Messages', $tw);
+   say ptitle('CSSM Failure Messages', $tw);
    say "\033[36m+"."-"x($tw-2)."+\033[0m";
-   say "CSSM Failure Reason:             ".$sla{fms}{flmrea};
+   say "CSSM Failure Reason:             ".($sla{fms}{flmrea}?$sla{fms}{flmrea}:NULL);
    say "CSSM Deregister Failure Reason:  ".$sla{fms}{flmder};
    say "CSSM 3rd Party Failure Message:  ".$sla{fms}{flmtpu};
 }
