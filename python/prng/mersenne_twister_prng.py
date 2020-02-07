@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 ## Mersenne Twister PRNG (algorithm created by Makoto Matsumo and Takuji Nishimura)
-## Mzvk 2020
+## Mzvk @ 2020
+
+import sys
 
 _mtws = 32                                   # state word size
 _mtts = 624                                  # state table size
@@ -37,5 +39,9 @@ def get_num():
    return num
 
 if __name__ == '__main__':
-   seed()
-   print get_num()
+   try:
+      seedv = int(sys.argv[1]) & 0xffffffff
+      seed(seedv)
+      print get_num()
+   except:
+      print "Input must be a single number"
