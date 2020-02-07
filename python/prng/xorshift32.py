@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ## XORSHIFT32 (algorithm by George Marsaglia)
-## MZvk @ 2020
+## Mzvk 2020
 
 import sys
 

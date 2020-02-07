@@ -1,5 +1,8 @@
 #!/usr/bin/env perl
 
+## MT 19937 PERL implementation
+## Mzvk 2020
+
 use strict;
 use warnings;
 use Data::Dumper;

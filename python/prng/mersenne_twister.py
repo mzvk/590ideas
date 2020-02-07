@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ## Mersenne Twister PRNG (algorithm created by Makoto Matsumo and Takuji Nishimura)
-## Mzvk @ 2020
+## Mzvk 2020
 
 import sys
 
