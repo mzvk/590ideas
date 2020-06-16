@@ -7,7 +7,6 @@ use v5.10;
 use strict;
 use warnings; 
 
-my $output = '';
 my @stack;
 my ($f, $s);
 
