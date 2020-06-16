@@ -14,7 +14,6 @@ my ($f, $s);
 die "No input, please submit equation in RPN notation.\n" if scalar @ARGV < 1;
 die "Incorrect RPN notation.\n" if $ARGV[0] !~ m/^[0-9+\-\/* ,]+$/;
 
-#my @input = split //, $inp =~ s/ |,//gr;
 my @input = split / |,/, $ARGV[0];
 while(@input){
    if($input[0] =~ m/[0-9]/) { push @stack, shift @input }
