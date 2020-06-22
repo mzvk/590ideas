@@ -32,9 +32,8 @@ say "Result: " . (shift @stack);
 
 sub validstck { return scalar @stack >= (shift // 0) ? 1 : 0; }
 sub help { 
-   print "Usage $0 <rpn equation>\n\nSupported operators: \n +  : addition\n -  : substraction\n *  : multiplication\n /  : division\n";
-   print " ^  : power\n %  : modulus\n ++ : increment\n -- : decrement\n";
-   exit 
+   die "Usage $0 <rpn equation>\n\nSupported operators: \n +  : addition\n -  : substraction\n *  : multiplication\n /  : division\n",
+       " ^  : power\n %  : modulus\n ++ : increment\n -- : decrement\n";
 }
 ## math functions ##
 sub add { return $_[1] +  $_[0] }
