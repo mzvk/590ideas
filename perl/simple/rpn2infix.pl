@@ -8,19 +8,27 @@ use strict;
 use warnings; 
 
 my @stack;
-my ($f, $s);
+my ($fa, $sa, $o);
+
+my %omap = ('+' => 0, '-' => 0, '*' => 2, '/' => 2);
 
 die "No input, please submit equation in RPN notation.\n" if scalar @ARGV < 1;
-die "Incorrect RPN notation.\n" if $ARGV[0] !~ m/^[0-9+\-\/* ,]+$/;
+die "Incorrect RPN notation.\n" if $ARGV[0] !~ m/^[0-9+\-\/* ,^%]+$/;
 
 my @input = split / |,/, $ARGV[0];
 while(@input){
-   if($input[0] =~ m/[0-9]/) { push @stack, shift @input }
+   if($input[0] =~ m/^[0-9]+$/) { push @stack, [shift @input, 100] }
    else { 
-       ($f, $s) = splice(@stack, -2);
-       push @stack, "($f " . (shift @input) . " $s)";
+       ($fa, $sa) = splice(@stack, -2);
+       $o = shift @input;
+       push @stack, [(sprintf "%s %s %s", bracketizer($o, $fa), $o, bracketizer($o, $sa)), $omap{$o}]; 
    }
 }
 
 say "POSTFIX NOTATION: $ARGV[0]";
-say "  INFIX NOTATION: " . shift @stack;
+say "  INFIX NOTATION: " . $stack[0][0];
+
+sub bracketizer {
+   my ($o, $f) = @_;
+   return $omap{$o} > $f->[1] ? "($fa->[0])" : $fa->[0];
+}
