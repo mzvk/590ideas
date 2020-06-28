@@ -10,7 +10,7 @@ use warnings;
 my @stack;
 my ($fa, $sa, $o);
 
-my %omap = ('+' => 0, '-' => 0, '*' => 2, '/' => 2);
+my %omap = ('+' => 0, '-' => 0, '*' => 2, '/' => 2, '^' => 4);
 
 die "No input, please submit equation in RPN notation.\n" if scalar @ARGV < 1;
 die "Incorrect RPN notation.\n" if $ARGV[0] !~ m/^[0-9+\-\/* ,^%]+$/;
@@ -30,5 +30,5 @@ say "  INFIX NOTATION: " . $stack[0][0];
 
 sub bracketizer {
    my ($o, $f) = @_;
-   return $omap{$o} > $f->[1] ? "($fa->[0])" : $fa->[0];
+   return $omap{$o} > $f->[1] ? "($f->[0])" : $f->[0];
 }
