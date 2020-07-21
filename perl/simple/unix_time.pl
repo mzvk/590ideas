@@ -9,7 +9,7 @@ die "No UNIX time provided.\n" if @ARGV < 1;
 for my $time (@ARGV) {
    if($time !~ m/^[0-9]+$/) { print "ERROR: UNIX time must be numeric value (\033[31m".$time."\033[0m => NaN).\n"; next }
    print "UNIX: ".$time."\n";
-   print "Epoch: ".strftime("%d.%m.%Y %H:%M:%S", localtime($time))."\n";
+   print "Epoch:  ".strftime("%d.%m.%Y %H:%M:%S", localtime($time))."\n";
    print "Elapse: ".ptime($time)."\n\n";
 }
 
