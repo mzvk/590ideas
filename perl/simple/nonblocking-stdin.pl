@@ -51,6 +51,7 @@ sub translate {
       '^]' => 'GROUP SEPERATOR (GS)', '^^' => 'RECORD SEPARATOR (RS)', '^_' => 'UNIT SEPARATOR (US)', '^?' => 'DELETE (DEL)', ' ' => 'SPACE (SP)',
       ## CSI (Control Sequence Introducer -> "^[[") mapping for ascii ##
       '^[[A' => 'CURSOR UP (CUU)', '^[[B' => 'CURSOR DOWN (CUD)', '^[[C' => 'CURSOR FORWARD/LEFT (CUF)', '^[[D' => 'CURSOR BACK/RIGHT (CUB)',
+      '^[[F' => 'END', '^[[E' => 'KEYPAD 5', '^[[H' => 'HOME',
       ## Terminal sequance (vt)
       '^[[1~' => 'HOME', '^[[2~' => 'INSERT', '^[[3~' => 'DELETE', '^[[4~' => 'END', '^[[5~' => 'PG UP', '^[[6~' => 'PG DN', '^[[7~' => 'HOME', 
       '^[[8~' => 'END', '^[[10~' => 'F0', '^[[11~' => 'F1', '^[[12~' => 'F2', '^[[13~' => 'F3', '^[[14~' => 'F4', '^[[15~' => 'F5',
@@ -65,10 +66,10 @@ sub translate {
       if ($akey->[0] != 0x1B) { $key = '! SCRAMBLED/UNKNOWN KEYCODE !' 
       } else {
          for my $c (@$akey) { $key .= $c < 0x20 ? '^'.chr(0x40+$c) : chr $c }
-         $key .= " -> \033[32m CSI CODE [" . $keymap{$key} . "]\033[0m"        if exists $keymap{$key} && scalar @$akey == 3 && $akey->[1] == 0x5B;
-         $key .= " -> \033[32m SS3 G3 CHAR-SET [" . $keymap{$key} . "]\033[0m" if exists $keymap{$key} && scalar @$akey == 3 && $akey->[1] == 0x4F;
-         $key .= " -> \033[32m SS2 G2 CHAR-SET [" . $keymap{$key} . "]\033[0m" if exists $keymap{$key} && scalar @$akey == 3 && $akey->[1] == 0x4E;
-         $key .= " -> \033[32m VT SEQUENCE [" . $keymap{$key} . "]\033[0m"     if exists $keymap{$key} && scalar @$akey >= 4 && $akey->[scalar @$akey - 1] == 0x7E;
+         $key .= " -> \033[32m CSI CODE | XTERM [" . $keymap{$key} . "]\033[0m" if exists $keymap{$key} && scalar @$akey == 3 && $akey->[1] == 0x5B;
+         $key .= " -> \033[32m SS3 G3 CHAR-SET [" . $keymap{$key} . "]\033[0m"  if exists $keymap{$key} && scalar @$akey == 3 && $akey->[1] == 0x4F;
+         $key .= " -> \033[32m SS2 G2 CHAR-SET [" . $keymap{$key} . "]\033[0m"  if exists $keymap{$key} && scalar @$akey == 3 && $akey->[1] == 0x4E;
+         $key .= " -> \033[32m VT SEQUENCE [" . $keymap{$key} . "]\033[0m"      if exists $keymap{$key} && scalar @$akey >= 4 && $akey->[scalar @$akey - 1] == 0x7E;
       }
    }
    printf "KEY PRESSED: \033[94m[0x%-10s]\033[0m %s\n", $keycode, $key;
