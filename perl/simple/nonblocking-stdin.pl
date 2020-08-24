@@ -2,7 +2,6 @@
 use warnings;
 use strict;
 use IO::Select;
-use Data::Dumper;
 
 my $s = IO::Select->new();
 $s->add( \*STDIN );
