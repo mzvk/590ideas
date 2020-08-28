@@ -2,6 +2,11 @@
 use warnings;
 use strict;
 use IO::Select;
+use Data::Dumper;
+
+## Script to demonstrate nonblocking STDIN
+## Unfortunately I don't have all keycode mapped to ANSI escape codes :(
+## Mzvk 2020
 
 my $s = IO::Select->new();
 $s->add( \*STDIN );
@@ -30,15 +35,19 @@ sub readkey {
          last unless $readkey[0] == 0x1B;
          last if scalar @readkey == 3 && $readkey[1] == 0x5B && $readkey[2] > 0x40;
          last if scalar @readkey > 2 && $readkey[1] == 0x5B && ord $charbuff == 0x7E;
+         last if scalar @readkey == 6 && $readkey[1] == 0x5B && $readkey[3] == 0x3B;
       }
       return @readkey;
    };
 }
 
 sub translate {
-   my $akey = shift;
-   my $keycode = join '', map { sprintf "%02x", $_ } @{$akey};
-   my $key;
+   my $akey    = shift;
+   my $keycode = join '', map {sprintf "%02x", $_} @{$akey};
+   my $key     = $akey->[0] == 0x7f ? 'DELETE' : join '', map {$_ < 0x20 ? '^'.chr(0x40 + $_) : chr $_} @{$akey};
+   my $tkey = $key;
+   my ($comment, $meta) = ('', '');
+   my %metamap = (1 => 'SHIFT', 2 => 'ALT', 4 => 'CTRL');
    my %keymap = (
       ## C0/C1 Control Codes mapping for ASCII ##
       '^A' => 'START OF HEADING (SOH)', '^B' => 'START OF TEXT (STX)', '^C' => 'END OF TEXT (ETX)', '^D' => 'END OF TRANSMISSION (EOT)', '^E' => 'ENQUIRY (ENQ)', 
@@ -58,26 +67,25 @@ sub translate {
       ## SINGLE SHIFT 3 (G3 CHAR SET)
       '^[OP' => 'F1', '^[OQ' => 'F2', '^[OR' => 'F3', '^[OS' => 'F4' 
    );
-   if (scalar @$akey < 2) {
-      $key = $akey->[0] < 0x20 || $akey->[0] == 0x7F ? '^'.chr(0x40+$akey->[0]) : chr $akey->[0];
-      $key .= " -> \033[32m CONTROL CODE [" . $keymap{$key} . "]\033[0m" if exists $keymap{$key};
+   if (scalar @$akey < 2) { $comment = " -> \033[32m CONTROL CODE [" . $keymap{$key} . "]\033[0m" if exists $keymap{$key};
    } else {
-      if ($akey->[0] != 0x1B) { $key = '! SCRAMBLED/UNKNOWN KEYCODE !' 
+      if ($akey->[0] != 0x1B) { $key = '! SCRAMBLED/UNKNOWN KEYCODE !'
       } else {
-         for my $c (@$akey) { $key .= $c < 0x20 ? '^'.chr(0x40+$c) : chr $c }
-         $key .= " -> \033[32m CSI CODE [" . $keymap{$key} . "]\033[0m"         if exists $keymap{$key} && scalar @$akey == 3 && $akey->[1] == 0x5B;
-         $key .= " -> \033[32m SS3 G3 CHAR-SET [" . $keymap{$key} . "]\033[0m"  if exists $keymap{$key} && scalar @$akey == 3 && $akey->[1] == 0x4F;
-         $key .= " -> \033[32m SS2 G2 CHAR-SET [" . $keymap{$key} . "]\033[0m"  if exists $keymap{$key} && scalar @$akey == 3 && $akey->[1] == 0x4E;
-         $key .= " -> \033[32m VT SEQUENCE [" . $keymap{$key} . "]\033[0m"      if exists $keymap{$key} && scalar @$akey >= 4 && $akey->[scalar @$akey - 1] == 0x7E;
-#	 $key .= " -> \033[32m SHIFT [SHIFT + " . . "] \033[0m"                        if scalar @$akey > 5 && $akey->[scalar @$akey - 3] == 0x3B && $akey->[scalar @$akey - 2] == 0x32;
-#        $key .= " -> \033[32m ALT [ALT + " . . "] \033[0m"                        if scalar @$akey > 5 && $akey->[scalar @$akey - 3] == 0x3B && $akey->[scalar @$akey - 2] == 0x33;
-#        $key .= " -> \033[32m SHIFT,ALT [SHIFT + ALT + " . . "] \033[0m"                        if scalar @$akey > 5 && $akey->[scalar @$akey - 3] == 0x3B && $akey->[scalar @$akey - 2] == 0x34;
-#        $key .= " -> \033[32m CTRL [CTRL + " . . "] \033[0m" 			       if scalar @$akey > 5 && $akey->[scalar @$akey - 3] == 0x3B && $akey->[scalar @$akey - 2] == 0x35;
-#	 $key .= " -> \033[32m SHIFT,CTRL [ SHIFT + CTRL + " . . "] \033[0m"           if scalar @$akey > 5 && $akey->[scalar @$akey - 3] == 0x3B && $akey->[scalar @$akey - 2] == 0x36;
-#        $key .= " -> \033[32m CTRL,ALT [CTRL + ALT + " . . "] \033[0m"                        if scalar @$akey > 5 && $akey->[scalar @$akey - 3] == 0x3B && $akey->[scalar @$akey - 2] == 0x37;
-#        $key .= " -> \033[32m SHIFT,ALT,CTRL [SHIFT + ALT + CTRL + " . . "] \033[0m"                        if scalar @$akey > 5 && $akey->[scalar @$akey - 3] == 0x3B && $akey->[scalar @$akey - 2] == 0x38;
-
+         if (scalar @$akey > 5 && $akey->[scalar @$akey - 3] == 0x3B){  ## META CHARACTERS
+            for my $vv (sort keys %metamap) { $meta .= $metamap{$vv}." " if ($akey->[scalar @$akey - 2] - 1) & $vv }
+            if($akey->[scalar @$akey - 1] == 0x7E){
+               splice @$akey, scalar @$akey - 3, 2;
+            } else {
+               splice @$akey, scalar @$akey - 4, 3;
+            }
+            $tkey = join '', map {$_ < 0x20 ? '^'.chr(0x40 + $_) : chr $_} @{$akey};
+         }
+         $comment .= " ++ \033[33mMETA KEYS: [". $meta ."]\033[0m"                  if $meta; 
+         $comment .= " -> \033[32m CSI CODE [" . $keymap{$tkey} . "]\033[0m"        if exists $keymap{$tkey} && scalar @$akey == 3 && $akey->[1] == 0x5B;
+         $comment .= " -> \033[32m SS3 G3 CHAR-SET [" . $keymap{$tkey} . "]\033[0m" if exists $keymap{$tkey} && scalar @$akey == 3 && $akey->[1] == 0x4F;
+         $comment .= " -> \033[32m SS2 G2 CHAR-SET [" . $keymap{$tkey} . "]\033[0m" if exists $keymap{$tkey} && scalar @$akey == 3 && $akey->[1] == 0x4E;
+         $comment .= " -> \033[32m VT SEQUENCE [" . $keymap{$tkey} . "]\033[0m"     if exists $keymap{$tkey} && scalar @$akey >= 4 && $akey->[scalar @$akey - 1] == 0x7E;
       }
    }
-   printf "KEY PRESSED: \033[94m[0x%-12s]\033[0m %s\n", $keycode, $key;
+   printf "KEY PRESSED: \033[94m[0x%-14s]\033[0m %-8s %s\n", $keycode, $key, $comment;
 }
