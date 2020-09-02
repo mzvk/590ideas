@@ -33,9 +33,9 @@ sub readkey {
          sysread STDIN, $charbuff, 1;
          push @readkey, ord $charbuff;
          last unless $readkey[0] == 0x1B;
-         last if scalar @readkey == 3 && $readkey[1] == 0x5B && $readkey[2] > 0x40;
-         last if scalar @readkey > 2 && $readkey[1] == 0x5B && ord $charbuff == 0x7E;
-         last if scalar @readkey == 6 && $readkey[1] == 0x5B && $readkey[3] == 0x3B;
+         last if scalar @readkey >  2 && $readkey[1] == 0x5B && ord $charbuff == 0x7E;                         ## VT seq.
+         last if scalar @readkey >  2 && $readkey[1] == 0x5B && ord $charbuff > 0x40 && ord $charbuff < 0x60;  ## ANSI CTRL seq.
+         last if scalar @readkey == 3 && ($readkey[1] == 0x4E || $readkey[1] == 0x4F);                         ## SS2/SS3
       }
       return @readkey;
    };
