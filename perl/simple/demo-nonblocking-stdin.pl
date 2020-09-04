@@ -72,6 +72,7 @@ sub translate {
       } else {
          if (scalar @$akey > 5 && $akey->[scalar @$akey - 3] == 0x3B){  ## META CHARACTERS
             for my $vv (sort keys %metamap) { $meta .= $metamap{$vv}." " if ($akey->[scalar @$akey - 2] - 1) & $vv }
+            chop $meta;
             if($akey->[scalar @$akey - 1] == 0x7E){
                splice @$akey, scalar @$akey - 3, 2;     ## VT
             } else {
