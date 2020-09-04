@@ -76,7 +76,7 @@ sub translate {
                splice @$akey, scalar @$akey - 3, 2;     ## VT
             } else {
                splice @$akey, scalar @$akey - 4, 3;     ## SS3
-               $akey->[1] = 0x4F;
+               $akey->[1] = 0x4F if $akey->[2] > 0x4F && $akey->[2] < 0x54;
             }
             $tkey = join '', map {$_ < 0x20 ? '^'.chr(0x40 + $_) : chr $_} @{$akey};
          }
