@@ -2,7 +2,6 @@
 use warnings;
 use strict;
 use IO::Select;
-use Data::Dumper;
 
 ## Script to demonstrate nonblocking STDIN
 ## Unfortunately I don't have all keycode mapped to ANSI escape codes :(
@@ -74,9 +73,10 @@ sub translate {
          if (scalar @$akey > 5 && $akey->[scalar @$akey - 3] == 0x3B){  ## META CHARACTERS
             for my $vv (sort keys %metamap) { $meta .= $metamap{$vv}." " if ($akey->[scalar @$akey - 2] - 1) & $vv }
             if($akey->[scalar @$akey - 1] == 0x7E){
-               splice @$akey, scalar @$akey - 3, 2;
+               splice @$akey, scalar @$akey - 3, 2;     ## VT
             } else {
-               splice @$akey, scalar @$akey - 4, 3;
+               splice @$akey, scalar @$akey - 4, 3;     ## SSG
+               $akey->[1] = 0x4F;
             }
             $tkey = join '', map {$_ < 0x20 ? '^'.chr(0x40 + $_) : chr $_} @{$akey};
          }
