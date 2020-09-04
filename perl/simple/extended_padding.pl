@@ -17,7 +17,7 @@ sub custpadd {
   }
 }
 
-die "Invalid input.\nUsage $0 <text> <padding character> <total length of string, txt + padding>\n" if $#ARGV < 3;
+die "Invalid input.\nUsage $0 <text> <padding character> <total length of string, txt + padding>, '<direction [<,>,<>]>\n" if $#ARGV < 3;
 die "$ARGV[2] is not numeric.\n" if $ARGV[2] !~ /^\d+$/;
 die "Wrong direction, only supported are < - leading, > - trailing, <> - both.\n" unless $ARGV[3] =~ m/^(?:<(?<=<)>|[<>])$/;
 print custpadd($ARGV[0], substr($ARGV[1],0,1), $ARGV[2], $ARGV[3]);

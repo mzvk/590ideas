@@ -4,6 +4,9 @@ use strict;
 use warnings;
 use POSIX qw(strftime);
 
+## Calculates exact date from the provided unix time as well as elapsed time used by the Cisco SmartLic
+## Mzvk 2019
+
 die "No UNIX time provided.\n" if @ARGV < 1;
 
 for my $time (@ARGV) {
