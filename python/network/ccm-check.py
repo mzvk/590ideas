@@ -114,7 +114,7 @@ for (pkt_data, pkt_meta) in RawPcapReader(args.pcap):
       sec += rxt[1] - result[mpid][len(result[mpid])-1][1][1]
       sec = int(sec * 10**-6)
       if sec >= ccm_base:
-         print "\033[31mWARNING:\033[0m too big delay between next CCM frame {} from MEP ID {}, threshold set over: {} was rcvd: {}".format(
+         print "\033[31mWARNING:\033[0m too big delay between next CCM frame {} from MEP ID {}, threshold: {} was rcvd: {}".format(
                count, mpid, ccm_base, sec)
          error['dlay'] += 1
          delay.add(mpid)
