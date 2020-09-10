@@ -75,7 +75,7 @@ for (pkt_data, pkt_meta) in RawPcapReader(args.pcap):
    h_ccm   = raw_pkt[40:  ]
 
    if raw_pkt[:11] != '0180c200003':
-      if args.debug: print "packet {} ignored - destination MAC is no OAM Multicast (01:80:C2:00:00:3X) :: {}.".format(count, raw_pkt[:12])
+      if args.debug: print "packet {} ignored - destination MAC is not an OAM Multicast (01:80:C2:00:00:3X) :: {}.".format(count, raw_pkt[:12])
       error['dmac'] += 1
       continue
 
