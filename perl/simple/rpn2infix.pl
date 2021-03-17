@@ -12,8 +12,8 @@ my ($fa, $sa, $o);
 
 my %omap = ('+' => 0, '-' => 0, '*' => 2, '/' => 2, '^' => 4);
 
-die "No input, please submit equation in RPN notation.\n" if scalar @ARGV < 1;
-die "Incorrect RPN notation.\n" if $ARGV[0] !~ m/^[0-9+\-\/* ,^%]+$/;
+die "ERROR: No input, please submit equation in RPN notation.\n" if scalar @ARGV < 1;
+die "ERROR: Incorrect RPN notation.\n" if $ARGV[0] !~ m/^[0-9+\-\/* ,^%]+$/;
 
 my @input = split / |,/, $ARGV[0];
 while(@input){
