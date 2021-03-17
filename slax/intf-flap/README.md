@@ -1,6 +1,6 @@
 ## Description
 
-Junos does give user possibility to quickly flap interface, since this requires two commit operations. Idea behind this script was to use underlying linux/unix shell to quickly bring interface down and then restore it after give delay. Since only root user can manipulate interfaces, solution to elevate privilated was needed, as it's not convinient to allow users to use root account.
+Junos doesn't give user possibility to quickly flap interface, since this requires two commit operations. Idea behind this script was to use underlying linux/unix shell to quickly bring interface down and then restore it after give delay. Since only root user can manipulate interfaces, solution to elevate privilated was needed, as it's not convinient to allow users to use root account.
 
 One of the properties of Junos SLAX event scripts is that they are run as root user. To use that and still be able to give user freedom of using it as an operational (op) scripts, apporach to combine this two types was taken. 
 
