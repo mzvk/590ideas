@@ -26,7 +26,7 @@ sub str2int {
 sub int2str {
   my $input = shift // return 0;
   if($input !~ /^[0-9]+$/){ print "[ERROR] Input $input is not a number - return 0!\n"; return 0; }
-  if($input > 4294967295){ print "[ERROR] Input $input is larger then 32bits - return 0!\n"; return 0; }
+  if($input > 4294967295){ print "[ERROR] Input $input is larger than 32bits - return 0!\n"; return 0; }
   return join ".", unpack 'C4', pack 'N', $input;
 }
 
