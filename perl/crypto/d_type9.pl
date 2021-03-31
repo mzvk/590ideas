@@ -24,23 +24,27 @@ my @padl = (0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x03,0x0
 my @jmod = ([0x01,0x04,0x20],[0x01,0x10,0x20],[0x01,0x08,0x20],[0x01,0x40],
             [0x01,0x20],[0x01,0x04,0x10,0x80],[0x01,0x20,0x40]);
 
-die "Incorrect type 9 string\n" unless $ARGV[0] =~ /^\$9\$[a-z0-9.\-\/]{4,}$/i;
+die "No input provided.\n" unless scalar @ARGV > 0;
 
-my $output = "";
-my ($prvpos) = grep { $jvig[$_] eq hex(unpack 'H*', substr($ARGV[0], 3, 1)) } 0 .. $#jvig;
-my $hash = substr($ARGV[0], 4 + $padl[$prvpos]);
+for my $iv (@ARGV){
+   die "Incorrect type 9 string - $iv\n" unless $iv =~ /^\$9\$[a-z0-9.\-\/]{4,}$/i;
 
-while(length($hash)){
-  my @nibb = @{$jmod[length($output) % scalar @jmod]};
-  die "Incorrect string length\n" unless length(substr($hash, 0, @nibb)) == @nibb;
-  my $dechar;
-  for my $idx (0 .. $#nibb){
-    my ($index) = grep { $jvig[$_] eq hex(unpack 'H*', substr($hash, $idx, 1)) } 0 .. $#jvig;
-    $dechar += (($index - $prvpos) % @jvig - 1) * @{$jmod[length($output) % @jmod]}[$idx];
-    $prvpos = $index;
-  }
-  $output .= chr($dechar % 256);
-  $hash = substr($hash, @nibb);
+   my $output = "";
+   my ($prvpos) = grep { $jvig[$_] eq hex(unpack 'H*', substr($iv, 3, 1)) } 0 .. $#jvig;
+   my $hash = substr($iv, 4 + $padl[$prvpos]);
+
+   while(length($hash)){
+      my @nibb = @{$jmod[length($output) % scalar @jmod]};
+      die "Incorrect string length\n" unless length(substr($hash, 0, @nibb)) == @nibb;
+      my $dechar;
+      for my $idx (0 .. $#nibb){
+         my ($index) = grep { $jvig[$_] eq hex(unpack 'H*', substr($hash, $idx, 1)) } 0 .. $#jvig;
+         $dechar += (($index - $prvpos) % @jvig - 1) * @{$jmod[length($output) % @jmod]}[$idx];
+         $prvpos = $index;
+      }
+      $output .= chr($dechar % 256);
+      $hash = substr($hash, @nibb);
+   }
+
+   printf "%s - %s\n", $iv, $output;
 }
-
-print $output."\n";
