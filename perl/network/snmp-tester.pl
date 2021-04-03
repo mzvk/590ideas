@@ -5,7 +5,6 @@ use strict;
 use warnings;
 use Digest::MD5;
 use Digest::SHA;
-use Data::Dumper;
 
 my ($LOGSTATE) = (0);
 my $gkul;
