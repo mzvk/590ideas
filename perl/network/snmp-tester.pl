@@ -3,9 +3,9 @@
 use v5.14;
 use strict;
 use warnings;
-use Net::SNMP;
 use Digest::MD5;
 use Digest::SHA;
+use Data::Dumper;
 
 my ($LOGSTATE) = (0);
 my $gkul;
@@ -15,56 +15,44 @@ my @args = argparse();
 
 my $jeid = verify_EngineID($args[0]);
 $gkul = unpack 'H*', createKul($args[1], $jeid, uc($args[2]));
-printf "LOC. AUTH_KEY [KUL]: %s\n", $gkul;
+printf "LOC. AUTH KEY [KUL]: %s\n", $gkul;
 if(scalar @args > 3) {
    $gkul = unpack 'H*', createKul($args[3], $jeid, uc($args[2]));
-   printf "LOC. PRIV_KEY [KUL]: %s\n", $gkul;
+   printf "LOC. PRIV KEY [KUL]: %s\n", $gkul;
 } 
 
 sub verify_EngineID {
    my $eid = lc(shift);
-   my $eoid = {'2636' => 'JUNIPER', 9 => 'CISCO'};
-   my @tmpeid;
-   my $spec = '';
-   my $vndr;
-   ### ADD LENGTH CHECK
+   my $eoid = {9 => 'CISCO', 11 => 'HP', 94 => 'NOKIA', 429 => '3COM', 1588 => 'BROCADE', 1777 => 'ATOS', 2011 => 'HUAWEI', 2620 => 'CHECKPOINT', 2636 => 'JUNIPER',
+               3376 => 'F5', 3746 => 'SWISSCOM', 4329 => 'SIEMENS', };
+   my @unpeid;
+   my ($spec, $vndr) = ('', '');
    my %decode = (
-      1 => sub { printf "ENGINE_ID ENCODES IPv4 ADDRESS\n" if $LOGSTATE; for (5..8 ) { $spec .= sprintf("%d%s",   $tmpeid[$_], $_ == 8  ? '' : '.') } },
-      2 => sub { printf "ENGINE_ID ENCODES IPv6 ADDRESS\n" if $LOGSTATE; for (5..20) { $spec .= sprintf("%02X",   $tmpeid[$_]); } },   ## NOT WORKING
-      3 => sub { printf "ENGINE_ID ENCODES MAC  ADDRESS\n" if $LOGSTATE; for (5..10) { $spec .= sprintf("%02X%s", $tmpeid[$_], $_ == 10 ? '' : ':') } },
-      4 => sub { printf "ENGINE_ID ENCODES ADMINISTRATIVELY ASSIGNED TEXT\n"   if $LOGSTATE; for (5..(length $eid)-1) { $spec .= chr($tmpeid[$_]) } },
-      5 => sub { printf "ENGINE_ID ENCODES ADMINISTRATIVELY ASSIGNED OCTETS\n" if $LOGSTATE; for (5..(length $eid)-1) { $spec .= sprintf("%02X ", $tmpeid[$_]) }; $spec =~ s/ $// },
-      6 => sub { }, ## NO DATA HOW IT IS FORMATED (RFC5434)
+      1 => sub { printf "ENGINE_ID ENCODES IPv4 ADDRESS\n" if $LOGSTATE; for (1..4 ) { $spec .= sprintf("%d%s",   $unpeid[$_], $_ == 8  ? '' : '.') } },
+      2 => sub { printf "ENGINE_ID ENCODES IPv6 ADDRESS\n" if $LOGSTATE; for (1..16) { $spec .= sprintf("%02X%s", $unpeid[$_], $_ % 2 ? '' : ':') }; $spec =~ s/:$// },
+      3 => sub { printf "ENGINE_ID ENCODES MAC  ADDRESS\n" if $LOGSTATE; for (1..6 ) { $spec .= sprintf("%02X%s", $unpeid[$_], $_ == 10 ? '' : ':') } },
+      4 => sub { printf "ENGINE_ID ENCODES ADMINISTRATIVELY ASSIGNED TEXT\n"   if $LOGSTATE; for (1..(length $eid)-4) { $spec .= chr($unpeid[$_]) } },
+      5 => sub { printf "ENGINE_ID ENCODES ADMINISTRATIVELY ASSIGNED OCTETS\n" if $LOGSTATE; for (1..(length $eid)-4) { $spec .= sprintf("%02X ", $unpeid[$_]) }; $spec =~ s/ $// },
+      6 => sub { printf "ENGINE_ID IS LOCAL, IDENTFIES DEFAULT CONTEXT\n"; }, ## NO DATA HOW IT IS FORMATED (RFC5434)
    );
    say "----[ENGINE_ID_VERIFICATION]----" if $LOGSTATE;
 
    if($eid =~ m/^(?:0x)?([a-f0-9]+)$/i) { 
       $eid = pack 'H*', length($1) % 2 ? '0'.$1 : $1;
       if(length $eid < 5 || length $eid > 32) { printf "[ERROR] Supplied EngineID is out of range (5-32 octets).\n"; return 0; }
-      my @vndrtp = unpack 'N*', $eid;
-      @tmpeid = unpack 'C*', $eid;
-      $vndrtp[0] &= 0x7FFFFFFF;
-      $vndr = exists $eoid->{$vndrtp[0]} ? $eoid->{$vndrtp[0]} : "'$vndrtp[0]' NOT RECOGNISED";
-      if($tmpeid[0] & 0x80){
+      @unpeid = unpack 'NC*', $eid;
+      if($unpeid[0] & 0x80000000) {
          printf "RFC2571 ENGINE_ID FORMAT (VARIABLE LENGTH)\n" if $LOGSTATE;
-         unless (exists $decode{$tmpeid[4]}) { printf "[ERROR] RESERVED OR NOT SUPPORTED FORMAT SPECIFIED INSIDE ENGINE_ID (5th OCTET = 0x%02X)\n", $tmpeid[4]; return 0; }
-         $decode{$tmpeid[4]}();
-#         if($tmpeid[4] == 1) {   
-#            if(length $eid != 9) {}
-#         }
-#         elsif($tmpeid[4] == 2) {
-#            if(length $eid != 21) {}    
-#            printf "ENGINE_ID ENCODES IPv6 ADDRESS\n";
-#            
-#         }
-#         elsif($tmpeid[4] == 3) { 
-#            if(length $eid != 11) {}   
-#         }
+         die "ENGINE_ID DOES NOT FIT SPECIFIED FORMAT LENGTH\n" if len_eid($unpeid[1], scalar @unpeid);
+         unless (exists $decode{$unpeid[1]}) { printf "[ERROR] RESERVED OR NOT SUPPORTED FORMAT SPECIFIED INSIDE ENGINE_ID (5th OCTET = 0x%02X)\n", $unpeid[1]; return 0 }
+         $decode{$unpeid[1]}();
       } else {
          printf "RFC1910 AGENT_ID FORMAT (12 OCTETS)\n";
-         if(length $eid != 12) { printf "[ERROR] Supplied EngineID fails length check for specified format [%d != 12].\n", length $eid; return 0; }
-         ### DECODE FOR THAT PART 
+         if(length $eid != 12) { printf "[ERROR] Supplied EngineID fails length check for specified format [%d != 12].\n", length $eid; return 0 }
+         $decode{5}();
       }
+      $unpeid[0] &= 0x7FFFFFFF;
+      $vndr = exists $eoid->{$unpeid[0]} ? $eoid->{$unpeid[0]} : "'$unpeid[0]' NOT RECOGNISED";
    } else { 
       printf "[ERROR] EngineID not in expected format (hexadecimal)\n"; 
       return 0;
@@ -74,6 +62,13 @@ sub verify_EngineID {
    return uc(unpack 'H*', $eid);
 }
 
+sub len_eid {
+   my ($type, $len) = @_;
+   my $limits = {1 => 9, 2 => 21, 3 => 11, 4 => 32, 5 => 32};
+   return $len <= $limits->{$type} ? 0 : 1 if $type > 3;
+   return $len == $limits->{$type} ? 0 : 1;
+}
+
 sub createKul {
    my ($pass, $aeid, $proto) = @_;
    my $digests = {MD5 => 'Digest::MD5', SHA => 'Digest::SHA'};
@@ -81,9 +76,9 @@ sub createKul {
    my $digest = $digests->{$proto}->new();
    my $c = 0;
    say "\n----[AUTH/PRIV KEY LOCALIZATION]----" if $LOGSTATE;
-   say "PASSWORD:           $pass"              if $LOGSTATE;
-   say "AUTH. ENGINE ID:    $aeid"              if $LOGSTATE;
-   say "PROTO:              $proto"             if $LOGSTATE;
+   say "PASSWORD:            $pass"              if $LOGSTATE;
+   say "AUTH. ENGINE ID:     $aeid"              if $LOGSTATE;
+   say "PROTO:               $proto"             if $LOGSTATE;
    $aeid = pack 'H*', $aeid;
    my @p = split //, $pass;
    while ($c < 2**20) {
@@ -91,7 +86,7 @@ sub createKul {
       $c++;
    }
    my $d = $digest->digest();
-   printf "DIGEST.0 [KU]:      %s\n", unpack 'H*', $d if $LOGSTATE;
+   printf "DIGEST.0 [KU]:       %s\n", unpack 'H*', $d if $LOGSTATE;
    return $digest->add($d . $aeid . $d)->digest();
 }
 
@@ -131,7 +126,7 @@ Example:
     $0 -verbose 000000000000000000000002 maplesyrup MD5
 
 $lb
-MZvk v0.2b // 01.04.2021
+MZvk v0.3a // 03.04.2021
 END_USAGE
 exit 0;
 }
