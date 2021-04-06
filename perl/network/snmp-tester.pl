@@ -6,9 +6,9 @@ use warnings;
 use Digest::MD5;
 use Digest::SHA;
 
-#SUB FOR PR1418914 (64B padding).
-#COMPARE?
-#LOCAL_ENGINE SUBTYPE CHECK?
+# SUB FOR PR1418914 (64B padding).
+# COMPARE?
+# LOCAL_ENGINE SUBTYPE CHECK?
 
 my ($LOGSTATE, $SILENT) = (0, 0);
 my $gkul;
@@ -123,6 +123,7 @@ Usage $0 [options] engineID auth_passwd auth_protocol [priv_passwd]
       -help    - prints this message and terminates                           (no operands)
       -verbose - sets output to verbose mode                                  (no operands)  
       -silent  - outputs only localized keys, newline seperated               (no operands)
+   Silent mode has higher priority then verbose mode.
    $sb
    engineID:      engine ID in the hexadecimal format                         (5-32 octets)      
    auth_passwd:   password used for the authentication key localization       (8-32 characters)
