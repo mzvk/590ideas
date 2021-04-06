@@ -6,7 +6,11 @@ use warnings;
 use Digest::MD5;
 use Digest::SHA;
 
-my ($LOGSTATE) = (0);
+#SUB FOR PR1418914 (64B padding).
+#COMPARE?
+#LOCAL_ENGINE SUBTYPE CHECK?
+
+my ($LOGSTATE, $SILENT) = (0, 0);
 my $gkul;
 
 usage() unless scalar @ARGV > 0;
@@ -14,10 +18,10 @@ my @args = argparse();
 
 my $jeid = verify_EngineID($args[0]);
 $gkul = unpack 'H*', createKul($args[1], $jeid, uc($args[2]));
-printf "LOC. AUTH KEY [KUL]: %s\n", $gkul;
+printf "%s%s\n", $SILENT ? '' : 'LOC. AUTH KEY [KUL]: ', $gkul;
 if(scalar @args > 3) {
    $gkul = unpack 'H*', createKul($args[3], $jeid, uc($args[2]));
-   printf "LOC. PRIV KEY [KUL]: %s\n", $gkul;
+   printf "%s%s\n", $SILENT ? '' : 'LOC. PRIV KEY [KUL]: ', $gkul;
 } 
 
 sub verify_EngineID {
@@ -46,7 +50,7 @@ sub verify_EngineID {
          unless (exists $decode{$unpeid[1]}) { printf "[ERROR] RESERVED OR NOT SUPPORTED FORMAT SPECIFIED INSIDE ENGINE_ID (5th OCTET = 0x%02X)\n", $unpeid[1]; return 0 }
          $decode{$unpeid[1]}();
       } else {
-         printf "RFC1910 AGENT_ID FORMAT (12 OCTETS)\n";
+         printf "RFC1910 AGENT_ID FORMAT (12 OCTETS)\n" if $LOGSTATE;
          if(length $eid != 12) { printf "[ERROR] Supplied EngineID fails length check for specified format [%d != 12].\n", length $eid; return 0 }
          $decode{5}();
       }
@@ -57,7 +61,7 @@ sub verify_EngineID {
       return 0;
    }
    printf "-----\nRAW ENGINE_ID:     %s\nVENDOR:            %s\nSPECIFIC DECODED:  %s\n", uc(unpack 'H*', $eid), $vndr, $spec if $LOGSTATE;
-   say "ENGINE_ID SEEMS VALID" unless $LOGSTATE;
+   say "ENGINE_ID SEEMS VALID" unless $SILENT;
    return uc(unpack 'H*', $eid);
 }
 
@@ -94,12 +98,14 @@ sub argparse {
    for (@ARGV) {
       if(m/^-help$/)    { usage() }
       if(m/^-verbose$/) { $LOGSTATE = 1; next }
+      if(m/^-silent$/)  { $SILENT = 1; next }
       if(m/^-.*$/)      { print "UNKNOWN OR INCORRECT USE OF OPTION, '$_' WILL BE IGNORED.\n"; next }
       s/ +//g;
       s/^SHA1$/SHA/; 
       push @args, $_;
    }
    die "SCRIPT REQUIRES AT LEAST 3 VALID ARGUMENTS TO OPERATE\n" if scalar @args < 3;
+   $LOGSTATE = 0 if $SILENT;
    return @args;
 }
 
@@ -116,6 +122,7 @@ Usage $0 [options] engineID auth_passwd auth_protocol [priv_passwd]
    Options:
       -help    - prints this message and terminates                           (no operands)
       -verbose - sets output to verbose mode                                  (no operands)  
+      -silent  - outputs only localized keys, newline seperated               (no operands)
    $sb
    engineID:      engine ID in the hexadecimal format                         (5-32 octets)      
    auth_passwd:   password used for the authentication key localization       (8-32 characters)
@@ -125,7 +132,7 @@ Example:
     $0 -verbose 000000000000000000000002 maplesyrup MD5
 
 $lb
-MZvk v0.3a // 03.04.2021
+MZvk v0.4a // 06.04.2021
 END_USAGE
 exit 0;
 }
