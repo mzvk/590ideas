@@ -2,7 +2,6 @@
 use warnings;
 use strict;
 use IO::Select;
-use Data::Dumper; # remove in final
 
 ## Script to translate and return normalized value of input from nonblocking STDIN
 ## Unfortunately I don't have all keycode mapped to ANSI escape codes :( [same applies to demo]
