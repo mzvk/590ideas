@@ -6,13 +6,10 @@
 use v5.10;
 use strict;
 use warnings;
-use Data::Dumper;
 
-my $texp = 0;
-my $sref = 0;
+my ($texp, $sref, $count) = (0, 0, 0);
 my @mamd;
 my @mamj;
-my $count = 0;
 my %errors;
 my $errorstamp;
 
