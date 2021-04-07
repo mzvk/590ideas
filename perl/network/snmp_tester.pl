@@ -6,7 +6,7 @@ use warnings;
 use Digest::MD5;
 use Digest::SHA;
 
-# SUB FOR PR1418914 (64B padding).
+# SUB FOR JUNIPER PR1418914 (64B padding).
 # COMPARE?
 # LOCAL_ENGINE SUBTYPE CHECK?
 
