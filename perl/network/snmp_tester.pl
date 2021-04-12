@@ -6,8 +6,6 @@ use warnings;
 use Digest::MD5;
 use Digest::SHA;
 
-# LOCAL_ENGINE SUBTYPE CHECK [0x6]?
-
 my ($LOGSTATE, $SILENT, $GIBS, $APROT) = (0, 0, 0, '');
 my @kuls;
 
@@ -32,7 +30,8 @@ sub verify_EngineID {
       3 => sub { printf "ENGINE_ID ENCODES MAC  ADDRESS\n" if $LOGSTATE; for (1..6 ) { $spec .= sprintf("%02X%s", $unpeid[$_], $_ == 10 ? '' : ':') } },
       4 => sub { printf "ENGINE_ID ENCODES ADMINISTRATIVELY ASSIGNED TEXT\n"   if $LOGSTATE; for (1..(length $eid)-4) { $spec .= chr($unpeid[$_]) } },
       5 => sub { printf "ENGINE_ID ENCODES ADMINISTRATIVELY ASSIGNED OCTETS\n" if $LOGSTATE; for (1..(length $eid)-4) { $spec .= sprintf("%02X ", $unpeid[$_]) }; $spec =~ s/ $// },
-      6 => sub { printf "ENGINE_ID IS LOCAL, IDENTFIES DEFAULT CONTEXT\n"; }, ## NO DATA HOW IT IS FORMATED (RFC5434)
+      6 => sub { die "INCORRECT VALUE FOR SPECIAL CONTEXT ENGINE ID [RFC5343]\n" if $unpeid[0] != 2147483648; 
+                 die "ENGINE_ID IS SPECIAL CONTEXT_ENGINE_ID AND SHOULD NOT BE USED TO IDENTIFY REMOTE AGENT.\n"; },
    );
    say "----[ENGINE_ID_VERIFICATION]----" if $LOGSTATE;
 
@@ -42,7 +41,7 @@ sub verify_EngineID {
       @unpeid = unpack 'NC*', $eid;
       if($unpeid[0] & 0x80000000) {
          printf "RFC2571 ENGINE_ID FORMAT (VARIABLE LENGTH)\n" if $LOGSTATE;
-         die "ENGINE_ID DOES NOT FIT SPECIFIED FORMAT LENGTH\n" if len_eid($unpeid[1], scalar @unpeid);
+         die "ENGINE_ID DOES NOT FIT SPECIFIED FORMAT LENGTH\n" if len_eid($unpeid[1], length $eid);
          unless (exists $decode{$unpeid[1]}) { printf "[ERROR] RESERVED OR NOT SUPPORTED FORMAT SPECIFIED INSIDE ENGINE_ID (5th OCTET = 0x%02X)\n", $unpeid[1]; return 0 }
          $decode{$unpeid[1]}();
       } else {
@@ -63,8 +62,8 @@ sub verify_EngineID {
 
 sub len_eid {
    my ($type, $len) = @_;
-   my $limits = {1 => 9, 2 => 21, 3 => 11, 4 => 32, 5 => 32};
-   return $len <= $limits->{$type} ? 0 : 1 if $type > 3;
+   my $limits = {1 => 9, 2 => 21, 3 => 11, 4 => 32, 5 => 32, 6 => 5};
+   return $len <= $limits->{$type} ? 0 : 1 if $type > 3 && $type < 6;
    return $len == $limits->{$type} ? 0 : 1;
 }
 
@@ -95,7 +94,6 @@ sub createExtK {
    $kul .= "\x00" x (64 - length $kul);
    my $K1 = $kul ^ $ipad;
    my $K2 = $kul ^ $opad;
-   
    printf "K1 VALUE: %s\n", (unpack 'H*', $K1);
    printf "K2 VALUE: %s\n", (unpack 'H*', $K2);
 }
