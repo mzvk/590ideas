@@ -6,23 +6,19 @@ use warnings;
 use Digest::MD5;
 use Digest::SHA;
 
-# SUB FOR JUNIPER PR1418914 (64B padding).
-# COMPARE?
-# LOCAL_ENGINE SUBTYPE CHECK?
+# LOCAL_ENGINE SUBTYPE CHECK [0x6]?
 
-my ($LOGSTATE, $SILENT) = (0, 0);
-my $gkul;
+my ($LOGSTATE, $SILENT, $GIBS, $APROT) = (0, 0, 0, '');
+my @kuls;
 
 usage() unless scalar @ARGV > 0;
 my @args = argparse();
-
 my $jeid = verify_EngineID($args[0]);
-$gkul = unpack 'H*', createKul($args[1], $jeid, uc($args[2]));
-printf "%s%s\n", $SILENT ? '' : 'LOC. AUTH KEY [KUL]: ', $gkul;
-if(scalar @args > 3) {
-   $gkul = unpack 'H*', createKul($args[3], $jeid, uc($args[2]));
-   printf "%s%s\n", $SILENT ? '' : 'LOC. PRIV KEY [KUL]: ', $gkul;
-} 
+for (1..$#args){
+   push @kuls, createKul($args[$_], $jeid);
+   printf "%s%s\n", $SILENT ? '' : sprintf("LOC. %s KEY [KUL]: ", $_-1 ? 'PRIV' : 'AUTH'), unpack 'H*', $kuls[$_-1];
+}
+createExtK($kuls[0]) if $GIBS;
 
 sub verify_EngineID {
    my $eid = lc(shift);
@@ -61,7 +57,7 @@ sub verify_EngineID {
       return 0;
    }
    printf "-----\nRAW ENGINE_ID:     %s\nVENDOR:            %s\nSPECIFIC DECODED:  %s\n", uc(unpack 'H*', $eid), $vndr, $spec if $LOGSTATE;
-   say "ENGINE_ID SEEMS VALID" unless $SILENT;
+   say "ENGINE_ID SEEMS VALID" unless $SILENT || $LOGSTATE;
    return uc(unpack 'H*', $eid);
 }
 
@@ -75,13 +71,13 @@ sub len_eid {
 sub createKul {
    my ($pass, $aeid, $proto) = @_;
    my $digests = {MD5 => 'Digest::MD5', SHA => 'Digest::SHA'};
-   die "[ERROR] Unrecognized protocol $proto\n" if !exists $digests->{$proto};
-   my $digest = $digests->{$proto}->new();
+   die "[ERROR] Unrecognized protocol $proto\n" if !exists $digests->{$APROT};
+   my $digest = $digests->{$APROT}->new();
    my $c = 0;
-   say "\n----[AUTH/PRIV KEY LOCALIZATION]----" if $LOGSTATE;
+   say "\n----[AUTH/PRIV KEY LOCALIZATION]----"  if $LOGSTATE;
    say "PASSWORD:            $pass"              if $LOGSTATE;
    say "AUTH. ENGINE ID:     $aeid"              if $LOGSTATE;
-   say "PROTO:               $proto"             if $LOGSTATE;
+   say "PROTO:               $APROT"             if $LOGSTATE;
    $aeid = pack 'H*', $aeid;
    my @p = split //, $pass;
    while ($c < 2**20) {
@@ -93,20 +89,34 @@ sub createKul {
    return $digest->add($d . $aeid . $d)->digest();
 }
 
+sub createExtK {
+   my $kul = shift;
+   my ($ipad, $opad) = ("\x36" x 64, "\x5c" x 64);
+   $kul .= "\x00" x (64 - length $kul);
+   my $K1 = $kul ^ $ipad;
+   my $K2 = $kul ^ $opad;
+   
+   printf "K1 VALUE: %s\n", (unpack 'H*', $K1);
+   printf "K2 VALUE: %s\n", (unpack 'H*', $K2);
+}
+
 sub argparse {
    my @args;
    for (@ARGV) {
-      if(m/^-help$/)    { usage() }
-      if(m/^-verbose$/) { $LOGSTATE = 1; next }
-      if(m/^-silent$/)  { $SILENT = 1; next }
-      if(m/^-.*$/)      { print "UNKNOWN OR INCORRECT USE OF OPTION, '$_' WILL BE IGNORED.\n"; next }
       s/ +//g;
-      s/^SHA1$/SHA/; 
+      if(m/^-help$/i)    { usage() }
+      if(m/^-verbose$/i) { $LOGSTATE = 1; next }
+      if(m/^-silent$/i)  { $SILENT   = 1; next }
+      if(m/^-all$/i)     { $GIBS     = 1; next }
+      if(m/^-.*$/)       { print "UNKNOWN OR INCORRECT USE OF OPTION, '$_' WILL BE IGNORED.\n"; next }
+      s/^SHA1$/SHA/i; 
       push @args, $_;
    }
-   die "SCRIPT REQUIRES AT LEAST 3 VALID ARGUMENTS TO OPERATE\n" if scalar @args < 3;
+   die "[ERROR] SCRIPT REQUIRES AT LEAST 3 VALID ARGUMENTS TO OPERATE\n" if scalar @args < 3;
    $LOGSTATE = 0 if $SILENT;
-   return @args;
+   $APROT = uc(splice @args, 2, 1);
+   printf "[WARN.] TOO MANY ARGUMENTS PROVIDED, LAST %d WERE/WAS DISCARDED\n", scalar @args - 3 if scalar @args > 3;
+   return splice @args, 0, 3;
 }
 
 sub usage {
@@ -123,7 +133,9 @@ Usage $0 [options] engineID auth_passwd auth_protocol [priv_passwd]
       -help    - prints this message and terminates                           (no operands)
       -verbose - sets output to verbose mode                                  (no operands)  
       -silent  - outputs only localized keys, newline seperated               (no operands)
-   Silent mode has higher priority then verbose mode.
+      -all     - calculates K1, K2 and pre-IV values                          (no operands)
+   Silent mode has higher priority then verbose or all mode.
+   All and verbose are not exclusive.
    $sb
    engineID:      engine ID in the hexadecimal format                         (5-32 octets)      
    auth_passwd:   password used for the authentication key localization       (8-32 characters)
