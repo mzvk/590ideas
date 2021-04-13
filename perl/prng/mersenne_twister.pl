@@ -5,7 +5,6 @@
 
 use strict;
 use warnings;
-use Data::Dumper;
 
 my @mt = (0) x 624;
 my $id = 625;

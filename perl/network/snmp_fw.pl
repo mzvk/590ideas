@@ -86,7 +86,6 @@ for my $ip (@hostlist){
   $FWresult->{$ip}->{status} = 'Success';
   $session->close();
 }
-#print Dumper($FWresult);
 
 say '----------[BEGIN]----------';
 for my $FW (keys %{$FWresult}){
@@ -128,7 +127,6 @@ for my $FW (keys %{$FWresult}){
   }
 }
 say '--------[END OF SCRIPT]----';
-#say Dumper($FWresult);
 if($argCSV){close $cfh;}
 
 sub getFeed {

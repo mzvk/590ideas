@@ -4,11 +4,10 @@
 ## Analysis pcap file.
 ## Mzvk 2020
 
-import scapy.error
 from scapy.utils import RawPcapReader
 from scapy.all import bytes_hex
 from StringIO import StringIO
-import argparse, sys
+import argparse, sys, os, scapy.error
 
 def errormap(key):
    if key == 'len': return 'PACKET LENGTH'
@@ -34,6 +33,7 @@ def timeavg(tsls):
    if len(tsls) < 2: return tsls[0]
    return sum(tsls) / len(tsls)
 
+rows, columns = os.popen('stty size', 'r').read().split()
 parser = argparse.ArgumentParser(prog='ccm-check', usage='%(prog)s [options] pcap-file')
 parser.add_argument('pcap', metavar='path', type=str)
 parser.add_argument('--debug', action='store_true')
