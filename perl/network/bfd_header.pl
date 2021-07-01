@@ -21,7 +21,7 @@ sub argval {
    for my $hexstr (@_) {
       $hexstr =~ s/ //g;
       if($hexstr !~ m/^[0-9a-fA-F]+$/) { printf "IGNORED: %s - INVALID CHARACTERS IN HEX STRING\n", $hexstr; next }
-      if((length $hexstr) % 2)     { printf "IGNORED: %s - INVALID HEX STRING LENGTH\n", $hexstr; next }
+      if((length $hexstr) % 2)         { printf "IGNORED: %s - INVALID HEX STRING LENGTH\n", $hexstr; next }
       push @normout, uc($hexstr);
    }
    return @normout;
@@ -43,13 +43,13 @@ sub shtime {
 sub mapper {
    my ($hxd, $type) = @_;
    if($type == 0) { if($hxd > 31) { say "VALUE OVERFLOWN"; exit }; return sprintf "%s (0x%x)", $hxd > 8 ? 'RESERVED' : $DIAG_MAP[$hxd], $hxd }
-   if($type == 1) { if($hxd > 3) { say "VALUE OVERFLOWN"; exit }; return sprintf "%s (0x%s)", $STAT_MAP[$hxd], $hxd }
+   if($type == 1) { if($hxd > 3)  { say "VALUE OVERFLOWN"; exit }; return sprintf "%s (0x%s)", $STAT_MAP[$hxd], $hxd }
 }
 
 sub shflags {
    my $flag = shift;
    my $output = sprintf "%s%s%s%s%s%s (0x%x)\n", $flag & 0x20 ? 'P' : '-', $flag & 0x10 ? 'F' : '-', $flag & 0x08 ? 'C' : '-',
-                        $flag & 0x04 ? 'A' : '-', $flag & 0x02 ? 'D' : '-', $flag & 0x01 ? 'M' : '-', $flag;
+                                                 $flag & 0x04 ? 'A' : '-', $flag & 0x02 ? 'D' : '-', $flag & 0x01 ? 'M' : '-', $flag;
    for my $i (-5 .. 0) { $output .= sprintf "               %s\n", $FLAG_MAP[5+$i] if $flag & 2**-$i; }
    return $output;
 }
