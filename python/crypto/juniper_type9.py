@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ## Pseudo crypto module for Juniper weak password
 ## Mzvk 2017
