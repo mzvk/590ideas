@@ -56,4 +56,4 @@ for (0 .. $#string){
   }
 }
 
-printf "%\n", $output;
+printf "%s\n", $output;

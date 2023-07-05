@@ -17,4 +17,4 @@ my $salt = int(rand(16));
 my $output = sprintf "%02d", $salt;
 
 for (split //, shift) {$output .= sprintf "%02X", ord($_) ^ $vig[$salt++ % @vig];}
-printf "%\n", $output;
+printf "%s\n", $output;
