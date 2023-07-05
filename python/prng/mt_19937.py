@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ## Mersenne Twister PRNG (algorithm created by Makoto Matsumo and Takuji Nishimura)
 ## Mzvk 2020
@@ -20,11 +20,11 @@ wcmask = u32cll ^ mtmask
 
 def seed(seed = 5489):
    mt[0] = seed & u32cll
-   for i in xrange(1, _mtts):
+   for i in range(1, _mtts):
       mt[i] = (0x6c078965 * (mt[i-1] ^ (mt[i-1] >> (_mtws - 2))) + i) & u32cll
 
 def twist():
-   for i in xrange(_mtts):
+   for i in range(_mtts):
       bits = (mt[i] & wcmask) | (mt[(i+1) % _mtts] & mtmask)
       mt[i] = mt[(i + _mtsp) % _mtts] ^ (bits >> 1) ^ ((bits & 1) * 0x9908b0df)
    return 0
@@ -39,9 +39,9 @@ def get_num():
    return num
 
 if __name__ == '__main__':
-   try:
-      seedv = int(sys.argv[1]) & 0xffffffff
-      seed(seedv)
-      print get_num()
-   except:
-      print "Input must be a single number"
+  try:
+    seedv = int(sys.argv[1]) & 0xffffffff
+    seed(seedv)
+    print(get_num())
+  except:
+    print("Input must be a single number")
