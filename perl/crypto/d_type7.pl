@@ -17,4 +17,4 @@ if( length($ARGV[0]) % 2 != 0 || length($ARGV[0]) < 4 || $ARGV[0] !~ /^[A-F0-9]+
 for(my $i = 2; $i < length($ARGV[0]); $i += 2){
 	$result .= chr(hex(substr($ARGV[0], $i, 2)) ^ $vig[($i_vig++) % 53]);
 }
-printf "%\n", $result;
+printf "%s\n", $result;
