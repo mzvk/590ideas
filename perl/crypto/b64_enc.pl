@@ -9,7 +9,7 @@ use warnings;
 sub Encode {
   my $d = shift;
   my $p = shift // '=';
-  my @b = shift // ('A'..'Z','a'..'z',0..9,'\+');
+  my @b = shift // ('A'..'Z','a'..'z',0..9,'+','/');
 
   my $pad = (3 - length($d) % 3) % 3;
   $d =~ s/(.)(.)?(.)?/$b[unpack('C', $1) >> 2].$b[((unpack('C', $1) & 0x03) << 4) + ($2 ? ((unpack('C', $2) & 0xF0) >> 4) : 0)].

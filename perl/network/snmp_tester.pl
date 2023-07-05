@@ -19,7 +19,7 @@ for (1..$#args){
 createExtK($kuls[0]) if $GIBS;
 
 sub verify_EngineID {
-   my $eid = lc(shift);
+   my $eid = +lc shift;
    my $eoid = {9 => 'CISCO', 11 => 'HP', 94 => 'NOKIA', 429 => '3COM', 1588 => 'BROCADE', 1777 => 'ATOS', 2011 => 'HUAWEI', 2620 => 'CHECKPOINT', 2636 => 'JUNIPER',
                3376 => 'F5', 3746 => 'SWISSCOM', 4329 => 'SIEMENS', };
    my @unpeid;
@@ -112,7 +112,7 @@ sub argparse {
    }
    die "[ERROR] SCRIPT REQUIRES AT LEAST 3 VALID ARGUMENTS TO OPERATE\n" if scalar @args < 3;
    $LOGSTATE = 0 if $SILENT;
-   $APROT = uc(splice @args, 2, 1);
+   $APROT = +uc splice @args, 2, 1;
    printf "[WARN.] TOO MANY ARGUMENTS PROVIDED, LAST %d WERE/WAS DISCARDED\n", scalar @args - 3 if scalar @args > 3;
    return splice @args, 0, 3;
 }
