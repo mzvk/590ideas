@@ -32,7 +32,7 @@ def juniper9Decrypt(inputHash):
      while inputHash:
         nibs = jmod[len(output) % len(jmod)]
         if not len(inputHash[:len(nibs)]) == len(nibs):
-           print "WARNING - Incorrect Juniper type9 string, ran out of characters."
+           print("WARNING - Incorrect Juniper type9 string, ran out of characters.")
            return ""
         deChr = 0
         for id, refch in enumerate(inputHash[:len(nibs)]):
@@ -46,7 +46,7 @@ def juniper9Encrypt(inputString, index=''):
    if index == "": idx = jvig[randint(0, len(jvig) - 1)]
    else: idx = jvig.index(ord(index))
    output = jid + chr(idx)
-   for i in xrange(0, jjnk[jvig.index(idx)]):
+   for i in range(0, jjnk[jvig.index(idx)]):
       output += chr(jvig[randint(0, len(jvig) - 1)])
    prevPos = jvig.index(idx)
    for idx, sChar in enumerate(inputString):
@@ -64,11 +64,11 @@ def juniper9Encrypt(inputString, index=''):
 def juniper9Check(inputHash):
    prevPos = 0
    if len(inputHash) < 8 or inputHash[:3] != jid:
-     print "WARNING - Incorrect Juniper type9 string."
+     print("WARNING - Incorrect Juniper type9 string.")
    else:
      for refch in [ord(x) for x in inputHash[3:]]:
         if not refch in jvig:
-           print "WARNING - Incorrect Juniper type9 string, incorrect characters."
+           print("WARNING - Incorrect Juniper type9 string, incorrect characters.")
            return 0
      prevPos = jvig.index(ord(inputHash[3:4]))
    return prevPos
